@@ -34,7 +34,9 @@ export default defineConfig({
             expect: {
               toMatchScreenshot: {
                 comparatorName: 'pixelmatch',
-                comparatorOptions: { allowedMismatchedPixelRatio: 0.001 },
+                // Zero tolerance: rendering is deterministic (regenerated references are
+                // byte-identical), and any tolerance lets small text changes slip through.
+                comparatorOptions: { allowedMismatchedPixels: 0 },
               },
             },
           },

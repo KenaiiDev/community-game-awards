@@ -69,6 +69,15 @@ export function createJudgeSignupStore(api: JudgeSignupApi) {
         set({ view: { kind: 'applied', edition: view.edition, user: view.user, application } });
       } catch (error) {
         const code = error instanceof ApiError ? error.code : 'unknown';
+        if (code === 'already_applied') {
+          // Applied elsewhere (another tab or device): show the stored application.
+          await get().load();
+          return;
+        }
+        if (code === 'unauthenticated') {
+          set({ view: { kind: 'signed_out', edition: view.edition } });
+          return;
+        }
         set({ view: { ...view, submitting: false, error: code } });
       }
     },

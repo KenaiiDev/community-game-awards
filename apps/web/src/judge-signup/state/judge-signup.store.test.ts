@@ -140,6 +140,38 @@ describe('judge signup store', () => {
     });
   });
 
+  it('shows the confirmation when the API says the user already applied (e.g. from another tab)', async () => {
+    let applied = false;
+    const store = createJudgeSignupStore(
+      fakeApi({
+        getMe: async () => ({ user, application: applied ? application : null }),
+        apply: async () => {
+          applied = true;
+          throw new ApiError(409, 'already_applied');
+        },
+      }),
+    );
+    await store.getState().load();
+    store.getState().setConsent(true);
+    await store.getState().submit();
+
+    expect(store.getState().view).toEqual({ kind: 'applied', edition: openEdition, user, application });
+  });
+
+  it('returns to sign-in when the session expired before submitting', async () => {
+    const store = createJudgeSignupStore(
+      fakeApi({
+        getMe: async () => ({ user, application: null }),
+        apply: async () => { throw new ApiError(401, 'unauthenticated'); },
+      }),
+    );
+    await store.getState().load();
+    store.getState().setConsent(true);
+    await store.getState().submit();
+
+    expect(store.getState().view).toEqual({ kind: 'signed_out', edition: openEdition });
+  });
+
   it('maps unexpected submit failures to a generic error', async () => {
     const store = createJudgeSignupStore(
       fakeApi({
