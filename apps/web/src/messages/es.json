@@ -1,0 +1,93 @@
+{
+  "brand": {
+    "name": "Community Game Awards"
+  },
+  "nav": {
+    "language": "Idioma",
+    "apply": "Postularme como juez"
+  },
+  "hero": {
+    "eyebrow": "{edition} · Inscripción de jueces abierta",
+    "eyebrowClosed": "{edition}",
+    "title": "Premios de videojuegos decididos por los jugadores, a la vista de todos",
+    "subtitle": "Los jueces se sortean entre la comunidad. Todas las nominaciones son públicas, todas las reglas se publican antes de que empiece la edición y nadie decide a puertas cerradas.",
+    "cta": "Postularme como juez",
+    "deadline": "La inscripción cierra el {date}"
+  },
+  "steps": {
+    "title": "Cómo funciona una edición",
+    "signup": {
+      "title": "Inscripción de jueces",
+      "body": "Cualquier persona con una cuenta de Discord puede postularse antes de la fecha límite."
+    },
+    "draw": {
+      "title": "Sorteo público",
+      "body": "Los jueces se sortean con una semilla verificable publicada de antemano."
+    },
+    "play": {
+      "title": "Tiempo para jugar",
+      "body": "Los jueces seleccionados tienen tiempo para jugar los juegos del año."
+    },
+    "nominate": {
+      "title": "Nominaciones",
+      "body": "Cada juez ordena sus elecciones por categoría. Todas las nominaciones son públicas."
+    },
+    "vote": {
+      "title": "Votación pública",
+      "body": "La comunidad vota a los ganadores entre los nominados."
+    },
+    "reveal": {
+      "title": "Ganadores",
+      "body": "Los resultados se publican junto con el registro completo y auditable de votos."
+    }
+  },
+  "principles": {
+    "title": "Primero las reglas, después los resultados",
+    "transparent": {
+      "title": "Transparente",
+      "body": "Los jueces, las nominaciones y las reglas de desempate son públicos."
+    },
+    "verifiable": {
+      "title": "Verificable",
+      "body": "Cualquier persona puede comprobar el sorteo y la votación."
+    },
+    "fair": {
+      "title": "Sin decisiones arbitrarias",
+      "body": "Las categorías y los desempates siguen reglas publicadas, no decisiones de un administrador."
+    }
+  },
+  "signup": {
+    "title": "Sé juez",
+    "loading": "Cargando la inscripción…",
+    "loadError": "No pudimos cargar la inscripción. Vuelve a intentarlo en un momento.",
+    "retry": "Reintentar",
+    "noEdition": "No hay ninguna edición abierta en este momento. Vuelve pronto.",
+    "notOpen": "La inscripción de jueces de {edition} abre el {date}.",
+    "closed": "La inscripción de jueces de {edition} cerró el {date}.",
+    "signedOutBody": "Inicia sesión con Discord para postularte. Solo leemos tu nombre de usuario y tu avatar.",
+    "signIn": "Iniciar sesión con Discord",
+    "authError": {
+      "state": "Tu sesión de inicio expiró. Vuelve a intentarlo.",
+      "discord": "El inicio de sesión con Discord no se completó. Vuelve a intentarlo."
+    },
+    "signedInAs": "Sesión iniciada como {name}",
+    "signOut": "Cerrar sesión",
+    "consent": "Acepto que mi identidad de Discord (nombre y avatar) y todas mis nominaciones sean públicas.",
+    "submit": "Postularme como juez",
+    "submitting": "Enviando la postulación…",
+    "deadline": "Las postulaciones cierran el {date}.",
+    "error": {
+      "already_applied": "Ya te postulaste a esta edición.",
+      "signup_closed": "La inscripción cerró antes de que se enviara tu postulación.",
+      "signup_not_open": "La inscripción todavía no abrió.",
+      "consent_required": "Debes aceptar que tu identidad sea pública para postularte.",
+      "unauthenticated": "Tu sesión expiró. Vuelve a iniciar sesión.",
+      "unknown": "Algo salió mal. Vuelve a intentarlo."
+    },
+    "appliedTitle": "Ya estás en el sorteo",
+    "appliedBody": "Recibimos tu postulación para {edition} el {date}. Los jueces seleccionados se anunciarán cuando cierre la inscripción."
+  },
+  "footer": {
+    "openSource": "Código abierto, gestionado por la comunidad."
+  }
+}

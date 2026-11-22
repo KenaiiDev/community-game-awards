@@ -10,3 +10,6 @@ storybook-static/
 .DS_Store
 apps/api/src/generated/
 *.tsbuildinfo
+.vitest-attachments/
+__screenshots__/**/*-actual.png
+__screenshots__/**/*-diff.png

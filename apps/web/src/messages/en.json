@@ -1,0 +1,93 @@
+{
+  "brand": {
+    "name": "Community Game Awards"
+  },
+  "nav": {
+    "language": "Language",
+    "apply": "Apply as a judge"
+  },
+  "hero": {
+    "eyebrow": "{edition} · Judge signup open",
+    "eyebrowClosed": "{edition}",
+    "title": "Game awards decided by players, in the open",
+    "subtitle": "Judges are drawn at random from the community. Every nomination is public, every rule is published before the edition starts, and nobody decides behind closed doors.",
+    "cta": "Apply as a judge",
+    "deadline": "Signup closes {date}"
+  },
+  "steps": {
+    "title": "How an edition works",
+    "signup": {
+      "title": "Judge signup",
+      "body": "Anyone with a Discord account can apply before the deadline."
+    },
+    "draw": {
+      "title": "Public random draw",
+      "body": "Judges are drawn with a verifiable seed published in advance."
+    },
+    "play": {
+      "title": "Time to play",
+      "body": "Selected judges get time to play the year's games."
+    },
+    "nominate": {
+      "title": "Nominations",
+      "body": "Each judge ranks their picks per category. Every nomination is public."
+    },
+    "vote": {
+      "title": "Public vote",
+      "body": "The community votes for the winners among the nominees."
+    },
+    "reveal": {
+      "title": "Winners revealed",
+      "body": "Results are published together with the full, auditable vote log."
+    }
+  },
+  "principles": {
+    "title": "Rules first, results later",
+    "transparent": {
+      "title": "Transparent",
+      "body": "Judges, nominations and tie-break rules are public."
+    },
+    "verifiable": {
+      "title": "Verifiable",
+      "body": "The draw and the vote can be checked by anyone."
+    },
+    "fair": {
+      "title": "No arbitrary calls",
+      "body": "Categories and tie-breaks follow published rules, not admin decisions."
+    }
+  },
+  "signup": {
+    "title": "Become a judge",
+    "loading": "Loading signup…",
+    "loadError": "We couldn't load the signup. Please try again in a moment.",
+    "retry": "Try again",
+    "noEdition": "There is no edition open right now. Check back soon.",
+    "notOpen": "Judge signup for {edition} opens {date}.",
+    "closed": "Judge signup for {edition} closed {date}.",
+    "signedOutBody": "Sign in with Discord to apply. We only read your username and avatar.",
+    "signIn": "Sign in with Discord",
+    "authError": {
+      "state": "Your sign-in session expired. Please try again.",
+      "discord": "Discord sign-in didn't complete. Please try again."
+    },
+    "signedInAs": "Signed in as {name}",
+    "signOut": "Sign out",
+    "consent": "I agree that my Discord identity (name and avatar) and all my nominations will be public.",
+    "submit": "Apply as a judge",
+    "submitting": "Sending application…",
+    "deadline": "Applications close {date}.",
+    "error": {
+      "already_applied": "You have already applied to this edition.",
+      "signup_closed": "Signup closed before your application was sent.",
+      "signup_not_open": "Signup hasn't opened yet.",
+      "consent_required": "You need to accept the public identity terms to apply.",
+      "unauthenticated": "Your session expired. Please sign in again.",
+      "unknown": "Something went wrong. Please try again."
+    },
+    "appliedTitle": "You're in the draw",
+    "appliedBody": "Your application for {edition} was received {date}. Selected judges will be announced after signup closes."
+  },
+  "footer": {
+    "openSource": "Open source and community run."
+  }
+}
