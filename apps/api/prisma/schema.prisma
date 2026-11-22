@@ -6,3 +6,36 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id           String             @id @default(uuid()) @db.Uuid
+  discordId    String             @unique
+  username     String
+  displayName  String
+  avatarUrl    String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  applications JudgeApplication[]
+}
+
+model Edition {
+  id             String             @id @default(uuid()) @db.Uuid
+  slug           String             @unique
+  name           String
+  signupOpensAt  DateTime
+  signupClosesAt DateTime
+  createdAt      DateTime           @default(now())
+  applications   JudgeApplication[]
+}
+
+model JudgeApplication {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @db.Uuid
+  editionId      String   @db.Uuid
+  consentedAt    DateTime
+  consentVersion String
+  user           User     @relation(fields: [userId], references: [id])
+  edition        Edition  @relation(fields: [editionId], references: [id])
+
+  @@unique([userId, editionId])
+}
