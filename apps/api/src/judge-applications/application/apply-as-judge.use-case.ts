@@ -25,10 +25,10 @@ export class ApplyAsJudge {
   async execute({ userId, consent }: ApplyAsJudgeCommand): Promise<JudgeApplication> {
     if (consent !== true) throw new ConsentRequiredError();
 
-    const edition = await this.editions.findActive();
+    const now = this.clock.now();
+    const edition = await this.editions.findActive(now);
     if (!edition) throw new NoActiveEditionError();
 
-    const now = this.clock.now();
     const status = signupStatus(edition, now);
     if (status === 'not_open') throw new SignupNotOpenError();
     if (status === 'closed') throw new SignupClosedError();

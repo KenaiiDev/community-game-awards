@@ -43,7 +43,7 @@ export class JudgeApplicationsController {
 
   @Get('editions/current')
   async currentEdition() {
-    const edition = await this.editions.findActive();
+    const edition = await this.editions.findActive(this.clock.now());
     if (!edition) throw new NoActiveEditionError();
     return {
       slug: edition.slug,
@@ -59,7 +59,7 @@ export class JudgeApplicationsController {
   async me(@Req() req: AuthenticatedRequest) {
     const user = await this.users.findById(req.userId);
     if (!user) throw new UnauthorizedException({ code: 'unauthenticated' });
-    const edition = await this.editions.findActive();
+    const edition = await this.editions.findActive(this.clock.now());
     const application = edition
       ? await this.applications.findByUserAndEdition(user.id, edition.id)
       : null;
@@ -78,7 +78,7 @@ export class JudgeApplicationsController {
       userId: req.userId,
       consent,
     });
-    const edition = (await this.editions.findActive())!;
+    const edition = (await this.editions.findActive(this.clock.now()))!;
     return applicationView(application, edition);
   }
 }

@@ -27,15 +27,30 @@ describe('Prisma repositories', () => {
     expect(await prisma.user.count()).toBe(1);
   });
 
-  it('treats the edition whose signup opened most recently as active', async () => {
-    await upsertEdition(prisma, {
-      slug: 'old', name: 'Old', signupOpensAt: new Date('2025-10-01Z'), signupClosesAt: new Date('2025-11-01Z'),
-    });
-    await upsertEdition(prisma, {
-      slug: 'express-2026', name: 'Express', signupOpensAt: new Date('2026-11-20Z'), signupClosesAt: new Date('2026-12-01Z'),
+  describe('active edition selection', () => {
+    beforeEach(async () => {
+      await upsertEdition(prisma, {
+        slug: 'old', name: 'Old', signupOpensAt: new Date('2025-10-01Z'), signupClosesAt: new Date('2025-11-01Z'),
+      });
+      await upsertEdition(prisma, {
+        slug: 'express-2026', name: 'Express', signupOpensAt: new Date('2026-11-20Z'), signupClosesAt: new Date('2026-12-01Z'),
+      });
+      await upsertEdition(prisma, {
+        slug: 'next-2027', name: 'Next', signupOpensAt: new Date('2027-09-01Z'), signupClosesAt: new Date('2027-10-01Z'),
+      });
     });
 
-    expect(await editions.findActive()).toMatchObject({ slug: 'express-2026' });
+    it('prefers the edition whose signup has already opened, even if a future one exists', async () => {
+      expect(await editions.findActive(new Date('2026-11-25Z'))).toMatchObject({ slug: 'express-2026' });
+    });
+
+    it('keeps the last opened edition active after its signup closes', async () => {
+      expect(await editions.findActive(new Date('2027-01-15Z'))).toMatchObject({ slug: 'express-2026' });
+    });
+
+    it('falls back to the soonest upcoming edition when none has opened yet', async () => {
+      expect(await editions.findActive(new Date('2025-01-01Z'))).toMatchObject({ slug: 'old' });
+    });
   });
 
   it('updates an existing edition by slug instead of duplicating it', async () => {
@@ -44,7 +59,7 @@ describe('Prisma repositories', () => {
     await upsertEdition(prisma, { ...base, signupClosesAt: new Date('2026-12-10Z') });
 
     expect(await prisma.edition.count()).toBe(1);
-    expect((await editions.findActive())?.signupClosesAt).toEqual(new Date('2026-12-10Z'));
+    expect((await editions.findActive(new Date("2026-11-25Z")))?.signupClosesAt).toEqual(new Date('2026-12-10Z'));
   });
 
   it('enforces one application per user and edition at the database level, even concurrently', async () => {

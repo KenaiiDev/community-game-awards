@@ -2,8 +2,8 @@ import type { Edition } from '../domain/edition.js';
 import type { JudgeApplication } from '../domain/judge-application.js';
 
 export interface EditionRepository {
-  /** The edition currently running, or null when none is configured. */
-  findActive(): Promise<Edition | null>;
+  /** The edition running at `now` (see PrismaEditionRepository), or null when none exists. */
+  findActive(now: Date): Promise<Edition | null>;
 }
 
 export interface JudgeApplicationRepository {

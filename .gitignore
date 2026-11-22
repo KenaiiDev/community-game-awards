@@ -9,3 +9,4 @@ storybook-static/
 *.log
 .DS_Store
 apps/api/src/generated/
+*.tsbuildinfo
