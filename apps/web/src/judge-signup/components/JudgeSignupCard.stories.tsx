@@ -102,6 +102,8 @@ export const Ready: Story = {
     await expect(canvas.getByRole('button', { name: 'Apply as a judge' })).toBeDisabled();
     await userEvent.click(canvas.getByRole('checkbox'));
     await expect(args.onConsentChange).toHaveBeenCalledWith(true);
+    // The consent links to what exactly it agrees to.
+    await expect(canvas.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
     // Who is signed in, and signing out, live in the app's HUD.
     await expect(canvas.queryByRole('button', { name: 'Sign out' })).toBeNull();
   },

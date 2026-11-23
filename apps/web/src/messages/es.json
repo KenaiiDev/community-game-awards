@@ -103,10 +103,12 @@
       "signup_closed": "La inscripción ya cerró, así que la postulación no se puede retirar. Aún puedes borrar tus datos desde tu cuenta.",
       "unknown": "No pudimos retirar tu postulación. Vuelve a intentarlo.",
       "rate_limited": "Demasiados intentos. Espera un minuto y vuelve a intentarlo."
-    }
+    },
+    "privacyLink": "Política de privacidad"
   },
   "footer": {
-    "openSource": "Código abierto, gestionado por la comunidad."
+    "openSource": "Código abierto, gestionado por la comunidad.",
+    "privacy": "Privacidad"
   },
   "menu": {
     "label": "Menú principal",
@@ -142,6 +144,52 @@
     "error": {
       "rate_limited": "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
       "unknown": "Algo salió mal. Vuelve a intentarlo."
-    }
+    },
+    "privacyLink": "Política de privacidad"
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "updated": "Última actualización: {date}",
+    "intro": "Community Game Awards es un proyecto de código abierto gestionado por la comunidad. Esta página explica, sin vueltas, qué guardamos sobre ti y cómo mantienes el control.",
+    "who": {
+      "title": "Quiénes somos",
+      "body": "Community Game Awards lo llevan adelante voluntarios. Para cualquier consulta o pedido sobre tus datos, escribe a <email>address</email>."
+    },
+    "collect": {
+      "title": "Qué guardamos",
+      "discord": "De Discord, solo cuando inicias sesión: tu ID de usuario, nombre de usuario, nombre visible y avatar. A Discord solo le pedimos el permiso \"identify\", así que nunca vemos tu email, tus servidores ni tus mensajes.",
+      "applications": "Cuando te postulas como juez: la edición, la fecha en que aceptaste las condiciones y la versión de esas condiciones.",
+      "cookies": "Cookies, todas estrictamente necesarias: una mantiene tu sesión (30 días), otra protege el inicio de sesión con Discord (10 minutos) y otra recuerda el idioma que elegiste.",
+      "ip": "Tu dirección IP, durante un minuto aproximadamente, para limitar el tráfico abusivo. Se guarda solo en memoria y nunca se almacena.",
+      "none": "Sin analíticas, sin publicidad, sin rastreo. Nunca vendemos ni compartimos tus datos."
+    },
+    "public": {
+      "title": "Qué se hace público",
+      "body": "Si sales sorteado como juez, se publicarán tu nombre visible y tu avatar de Discord, y cada nominación que hagas. Esa transparencia es la razón de ser de estos premios, y por eso pedimos tu consentimiento explícito antes de que te postules."
+    },
+    "why": {
+      "title": "Para qué lo usamos",
+      "body": "Para gestionar la inscripción de jueces y el sorteo público, con tu consentimiento, y para proteger el servicio del abuso."
+    },
+    "processors": {
+      "title": "Quién lo procesa",
+      "body": "Discord (inicio de sesión), Vercel (alojamiento del sitio y su API) y Neon (base de datos). Procesan los datos solo para prestar esos servicios, y sus servidores pueden estar fuera de tu país."
+    },
+    "retention": {
+      "title": "Cuánto tiempo lo guardamos",
+      "body": "Hasta que borres tu cuenta. Al borrarla se elimina todo lo que tenemos sobre ti, incluidas tus postulaciones."
+    },
+    "choices": {
+      "title": "Tus opciones",
+      "withdraw": "Retirar tu postulación mientras la inscripción esté abierta, desde la tarjeta de inscripción.",
+      "delete": "Borrar todos tus datos tú mismo desde Cuenta, en el menú principal. El borrado se hace una semana después, por si cambias de opinión; después es definitivo.",
+      "update": "Tu perfil se actualiza desde Discord cada vez que inicias sesión.",
+      "contact": "Para cualquier otra cosa, como una copia de tus datos, una corrección o una consulta, escribe a <email>address</email>."
+    },
+    "changes": {
+      "title": "Cambios en esta política",
+      "body": "Si esta política cambia, se actualizarán esta página y su fecha, y los cambios importantes se anunciarán en el sitio."
+    },
+    "back": "Volver al menú principal"
   }
 }

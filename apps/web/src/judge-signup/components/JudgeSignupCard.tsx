@@ -5,6 +5,7 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
 import { Avatar } from '@/ui/Avatar';
 import { Button, ButtonLink } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
+import { PrivacyLink } from '@/legal/PrivacyLink';
 import type { SignupView } from '../state/judge-signup.store';
 
 const KNOWN_ERRORS = [
@@ -252,6 +253,9 @@ export function JudgeSignupCard({
             </span>
             <span>{t('consent')}</span>
           </label>
+          <p className="-mt-2 text-xs text-ink-400">
+            <PrivacyLink>{t('privacyLink')}</PrivacyLink>
+          </p>
           {view.error && <Notice tone="danger">{t(`error.${errorKey}`)}</Notice>}
           <Button type="submit" className="w-full" disabled={!view.consent || view.submitting}>
             {view.submitting ? t('submitting') : t('submit')}

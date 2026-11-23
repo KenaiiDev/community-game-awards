@@ -7,6 +7,8 @@ import { Button } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
 import type { Edition } from '@/judge-signup/api/types';
 import { LOCALES } from '@/i18n/locales';
+import { localePath } from '@/i18n/paths';
+import { PrivacyLink } from '@/legal/PrivacyLink';
 
 export interface LandingPageProps {
   locale: string;
@@ -109,7 +111,9 @@ function AccountScreen({ account }: { account: Account }) {
       </div>
       <div>
         <h3 className="mb-1 font-display text-lg font-semibold">{t('dataTitle')}</h3>
-        <p className="text-sm leading-6 text-ink-400">{t('dataBody')}</p>
+        <p className="text-sm leading-6 text-ink-400">
+          {t('dataBody')} <PrivacyLink>{t('privacyLink')}</PrivacyLink>
+        </p>
       </div>
       {account.error && (
         <p role="alert" className="border-l-2 border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
@@ -421,6 +425,12 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
             ◆
           </span>
           <p className="flex-1 text-sm leading-6 text-ink-200">{t('hero.subtitle')}</p>
+          <a
+            href={localePath(locale, '/privacy')}
+            className="shrink-0 font-pixel text-[0.6rem] tracking-wider text-ink-200 uppercase underline decoration-dotted underline-offset-4 hover:text-lime-300"
+          >
+            {t('footer.privacy')}
+          </a>
           <span className="hidden shrink-0 font-pixel text-[0.6rem] tracking-wider text-ink-400 uppercase md:block">
             {t('footer.openSource')}
           </span>

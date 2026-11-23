@@ -82,6 +82,8 @@ export const SignupOpen: Story = {
     await expect(tab('Quest')).toHaveAttribute('aria-selected', 'true');
     await expect(within(screen()).getByRole('heading', { name: 'Become a judge' })).toBeInTheDocument();
     await expect(screen()).toHaveAttribute('aria-labelledby', tab('Quest').id);
+    // The privacy policy is always one click away.
+    await expect(canvas.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy');
   },
 };
 
@@ -142,6 +144,7 @@ export const SignupOpenSpanish: Story = {
       ['Misión', 'Registro de misiones', 'Reglas', 'Idioma'].map((name) => tabs.indexOf(tab(name))),
     ).toEqual([0, 1, 2, 3]);
     await expect(within(canvasElement).getByText('Quedan 19 d 12 h')).toBeInTheDocument();
+    await expect(within(canvasElement).getByRole('link', { name: 'Privacidad' })).toHaveAttribute('href', '/es/privacy');
     await userEvent.click(tab('Idioma'));
     // "/en" (not "/") so the middleware updates the remembered locale cookie;
     // "/" would redirect a Spanish visitor straight back to "/es".
@@ -217,6 +220,7 @@ export const AccountScreen: Story = {
     await expect(account.getByRole('heading', { name: 'Your account' })).toBeInTheDocument();
     await expect(account.getByText('Signed in with Discord as Kenaii')).toBeInTheDocument();
     await expect(account.getByRole('button', { name: 'Delete my data' })).toBeEnabled();
+    await expect(account.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
   },
 };
 
