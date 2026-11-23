@@ -55,11 +55,13 @@ export function LandingPage({ locale, edition, signup }: LandingPageProps) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-ink-950 text-ink-50">
-      {/* Stage lighting: a warm glow behind the hero and a faint dot grid. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[44rem]">
-        <div className="absolute -top-40 left-1/2 h-[36rem] w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(240_193_75/0.16),transparent)]" />
-        <div className="absolute -top-20 right-[-10rem] h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(88_101_242/0.14),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgb(255_255_255/0.07)_1px,transparent_1px)] [mask-image:linear-gradient(to_bottom,black,transparent)] bg-[size:24px_24px]" />
+      {/* Stage lighting that drifts slowly behind the whole page: two warm glows,
+          a cool one and a faint dot grid. Fixed, so it keeps moving while scrolling. */}
+      <div data-testid="ambient" aria-hidden="true" className="pointer-events-none fixed inset-0">
+        <div className="absolute -top-48 left-1/2 -ml-[30rem] h-[36rem] w-[60rem] animate-drift-a rounded-full bg-[radial-gradient(closest-side,rgb(240_193_75/0.16),transparent)]" />
+        <div className="absolute -top-24 -right-40 h-[30rem] w-[30rem] animate-drift-b rounded-full bg-[radial-gradient(closest-side,rgb(88_101_242/0.16),transparent)]" />
+        <div className="absolute top-1/2 -left-48 h-[32rem] w-[32rem] animate-drift-c rounded-full bg-[radial-gradient(closest-side,rgb(240_193_75/0.08),transparent)]" />
+        <div className="absolute inset-0 animate-pan bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_top,black,transparent_75%)] bg-[size:24px_24px]" />
       </div>
 
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-5">

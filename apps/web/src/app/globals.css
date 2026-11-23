@@ -49,6 +49,12 @@ body {
   --animate-pop: pop 0.45s var(--ease-spring) calc(var(--i, 0) * 80ms) both;
   --animate-swap: swap 0.3s var(--ease-out-expo) both;
   --animate-wiggle: wiggle 0.5s var(--ease-spring);
+
+  /* Ambient background: slow enough to be felt rather than watched. */
+  --animate-drift-a: drift-a 28s ease-in-out infinite alternate;
+  --animate-drift-b: drift-b 34s ease-in-out infinite alternate;
+  --animate-drift-c: drift-c 40s ease-in-out infinite alternate;
+  --animate-pan: pan 60s linear infinite;
 }
 
 @keyframes rise {
@@ -78,6 +84,40 @@ body {
   }
   60% {
     transform: rotate(8deg) scale(1.1);
+  }
+}
+
+@keyframes drift-a {
+  50% {
+    transform: translate(6vw, 8vh) scale(1.15);
+  }
+  100% {
+    transform: translate(-8vw, 4vh) scale(0.95);
+  }
+}
+
+@keyframes drift-b {
+  50% {
+    transform: translate(-10vw, 12vh) scale(1.2);
+  }
+  100% {
+    transform: translate(-4vw, -4vh) scale(1);
+  }
+}
+
+@keyframes drift-c {
+  50% {
+    transform: translate(14vw, -10vh) scale(1.25);
+  }
+  100% {
+    transform: translate(6vw, 8vh) scale(0.9);
+  }
+}
+
+/* Moves exactly ten grid cells, so the loop is seamless. */
+@keyframes pan {
+  to {
+    background-position: 240px 240px;
   }
 }
 

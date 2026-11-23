@@ -50,6 +50,14 @@ export const SignupOpen: Story = {
     const animation = getComputedStyle(heading).animationName;
     if (reduced) await expect(animation).toBe('none');
     else await expect(animation).not.toBe('none');
+    // The background drifts slowly behind the page, also only without reduced motion.
+    const ambient = canvas.getByTestId('ambient');
+    await expect(ambient).toHaveAttribute('aria-hidden', 'true');
+    for (const layer of ambient.children) {
+      const drift = getComputedStyle(layer).animationName;
+      if (reduced) await expect(drift).toBe('none');
+      else await expect(drift).not.toBe('none');
+    }
     await expect(canvas.getByRole('link', { name: 'Apply as a judge' })).toHaveAttribute('href', '#judge-signup');
     // The language menu is collapsed until opened, then lists every language.
     await expect(canvas.getByRole('link', { name: 'Español', hidden: true })).not.toBeVisible();

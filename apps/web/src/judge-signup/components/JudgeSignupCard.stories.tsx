@@ -118,7 +118,10 @@ export const Applied: Story = {
       application: { editionSlug: edition.slug, consentedAt: '2026-11-25T12:00:00.000Z', consentVersion: 'v1' },
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
+    // An applied judge can still sign out.
+    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Sign out' }));
+    await expect(args.onSignOut).toHaveBeenCalledOnce();
     // Applying is celebrated with a burst of confetti. It is decorative only, and
     // with reduced motion it never shows up (tests always run with reduced motion).
     const celebration = within(canvasElement).getByTestId('celebration');
@@ -138,4 +141,4 @@ export const ReadySpanish: Story = {
   },
 };
 
-export const AppliedSpanish: Story = { ...Applied, parameters: { locale: 'es' } };
+export const AppliedSpanish: Story = { args: Applied.args, parameters: { locale: 'es' } };
