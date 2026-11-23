@@ -2,7 +2,8 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
-import { ButtonLink } from '@/ui/Button';
+import { Button, ButtonLink } from '@/ui/Button';
+import { Avatar } from '@/ui/Avatar';
 import type { Edition } from '@/judge-signup/api/types';
 import { LOCALES } from '@/i18n/locales';
 
@@ -11,6 +12,8 @@ export interface LandingPageProps {
   edition: Edition | null;
   /** The judge signup card (container in the app, presentational in stories). */
   signup: ReactNode;
+  /** The signed-in visitor, shown in the header with a way to sign out. */
+  account?: { user: { displayName: string; avatarUrl: string | null }; onSignOut(): void } | null;
 }
 
 
@@ -37,7 +40,7 @@ function Globe() {
   );
 }
 
-export function LandingPage({ locale, edition, signup }: LandingPageProps) {
+export function LandingPage({ locale, edition, signup, account }: LandingPageProps) {
   const t = useTranslations();
   const format = useFormatter();
   const signupOpen = edition?.signupStatus === 'open';
@@ -71,36 +74,47 @@ export function LandingPage({ locale, edition, signup }: LandingPageProps) {
           </span>
           {t('brand.name')}
         </span>
-        <nav aria-label={t('nav.language')} className="relative text-sm">
-          {/* <details> keeps the menu usable without JavaScript and scales to any
-              number of community translations. */}
-          <details className="group">
-            <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-1.5 text-ink-200 hover:bg-ink-800 hover:text-ink-50 [&::-webkit-details-marker]:hidden">
-              <Globe />
-              <span>{LOCALES.find((l) => l.code === locale)?.name ?? locale}</span>
-              <span aria-hidden="true" className="text-xs transition-transform group-open:rotate-180">▾</span>
-            </summary>
-            <ul className="absolute right-0 z-10 mt-2 min-w-40 origin-top-right animate-swap rounded-lg border border-ink-700 bg-ink-900 p-1 shadow-xl shadow-black/40">
-              {LOCALES.map(({ code, name }) => (
-                <li key={code}>
-                  <a
-                    // Always prefixed: the middleware remembers the chosen language in a
-                    // cookie, and only a prefixed URL updates it ("/en" then redirects to "/").
-                    href={`/${code}`}
-                    hrefLang={code}
-                    lang={code}
-                    aria-current={code === locale ? 'true' : undefined}
-                    className={`block rounded-md px-3 py-2 ${
-                      code === locale ? 'bg-ink-800 text-ink-50' : 'text-ink-200 hover:bg-ink-800 hover:text-ink-50'
-                    }`}
-                  >
-                    {name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </details>
-        </nav>
+        <div className="flex items-center gap-2">
+          {account && (
+            <div className="flex animate-swap items-center gap-2 rounded-full border border-ink-700 bg-ink-900 p-1">
+              <Avatar name={account.user.displayName} src={account.user.avatarUrl} size={28} />
+              <span className="hidden max-w-32 truncate text-sm text-ink-200 sm:inline">{account.user.displayName}</span>
+              <Button variant="ghost" className="rounded-full px-3 py-1 text-xs" onClick={account.onSignOut}>
+                {t('signup.signOut')}
+              </Button>
+            </div>
+          )}
+          <nav aria-label={t('nav.language')} className="relative text-sm">
+            {/* <details> keeps the menu usable without JavaScript and scales to any
+                number of community translations. */}
+            <details className="group">
+              <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-1.5 text-ink-200 hover:bg-ink-800 hover:text-ink-50 [&::-webkit-details-marker]:hidden">
+                <Globe />
+                <span>{LOCALES.find((l) => l.code === locale)?.name ?? locale}</span>
+                <span aria-hidden="true" className="text-xs transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <ul className="absolute right-0 z-10 mt-2 min-w-40 origin-top-right animate-swap rounded-lg border border-ink-700 bg-ink-900 p-1 shadow-xl shadow-black/40">
+                {LOCALES.map(({ code, name }) => (
+                  <li key={code}>
+                    <a
+                      // Always prefixed: the middleware remembers the chosen language in a
+                      // cookie, and only a prefixed URL updates it ("/en" then redirects to "/").
+                      href={`/${code}`}
+                      hrefLang={code}
+                      lang={code}
+                      aria-current={code === locale ? 'true' : undefined}
+                      className={`block rounded-md px-3 py-2 ${
+                        code === locale ? 'bg-ink-800 text-ink-50' : 'text-ink-200 hover:bg-ink-800 hover:text-ink-50'
+                      }`}
+                    >
+                      {name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </nav>
+        </div>
       </header>
 
       <main className="relative">

@@ -24,7 +24,6 @@ const meta = {
     signInUrl: '/api/auth/discord',
     onConsentChange: fn(),
     onSubmit: fn(),
-    onSignOut: fn(),
     onRetry: fn(),
   },
   decorators: [(Story) => <div className="mx-auto max-w-lg"><Story /></div>],
@@ -78,8 +77,9 @@ export const Ready: Story = {
     await expect(canvas.getByRole('button', { name: 'Apply as a judge' })).toBeDisabled();
     await userEvent.click(canvas.getByRole('checkbox'));
     await expect(args.onConsentChange).toHaveBeenCalledWith(true);
-    await userEvent.click(canvas.getByRole('button', { name: 'Sign out' }));
-    await expect(args.onSignOut).toHaveBeenCalledOnce();
+    // The card shows who is applying; signing out lives in the page header.
+    await expect(canvas.getByText('Signed in as Kenaii')).toBeInTheDocument();
+    await expect(canvas.queryByRole('button', { name: 'Sign out' })).toBeNull();
   },
 };
 
@@ -118,10 +118,7 @@ export const Applied: Story = {
       application: { editionSlug: edition.slug, consentedAt: '2026-11-25T12:00:00.000Z', consentVersion: 'v1' },
     },
   },
-  play: async ({ canvasElement, args }) => {
-    // An applied judge can still sign out.
-    await userEvent.click(within(canvasElement).getByRole('button', { name: 'Sign out' }));
-    await expect(args.onSignOut).toHaveBeenCalledOnce();
+  play: async ({ canvasElement }) => {
     // Applying is celebrated with a burst of confetti. It is decorative only, and
     // with reduced motion it never shows up (tests always run with reduced motion).
     const celebration = within(canvasElement).getByTestId('celebration');

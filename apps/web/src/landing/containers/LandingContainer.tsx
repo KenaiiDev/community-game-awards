@@ -17,18 +17,20 @@ export function LandingContainer({ locale, authError }: { locale: string; authEr
   }, [store, authError]);
 
   const edition = 'edition' in state.view ? state.view.edition : null;
+  const account =
+    'user' in state.view ? { user: state.view.user, onSignOut: () => void state.signOut() } : null;
 
   return (
     <LandingPage
       locale={locale}
       edition={edition}
+      account={account}
       signup={
         <JudgeSignupCard
           view={state.view}
           signInUrl={SIGN_IN_URL}
           onConsentChange={state.setConsent}
           onSubmit={() => void state.submit()}
-          onSignOut={() => void state.signOut()}
           onRetry={() => void state.load()}
         />
       }

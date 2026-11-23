@@ -20,7 +20,6 @@ function signup(view: SignupView) {
       signInUrl="/api/auth/discord"
       onConsentChange={fn()}
       onSubmit={fn()}
-      onSignOut={fn()}
       onRetry={fn()}
     />
   );
@@ -95,4 +94,31 @@ export const SignupClosed: Story = {
 
 export const WithoutEdition: Story = {
   args: { edition: null, signup: signup({ kind: 'no_edition' }) },
+};
+
+export const SignedIn: Story = {
+  args: {
+    account: { user: { displayName: 'Kenaii', avatarUrl: null }, onSignOut: fn() },
+    signup: signup({
+      kind: 'ready',
+      edition,
+      user: { username: 'kenaii', displayName: 'Kenaii', avatarUrl: null },
+      consent: false,
+      submitting: false,
+    }),
+  },
+  play: async ({ canvasElement, args }) => {
+    const header = within(within(canvasElement).getByRole('banner'));
+    await expect(header.getByText('Kenaii')).toBeInTheDocument();
+    await userEvent.click(header.getByRole('button', { name: 'Sign out' }));
+    await expect(args.account?.onSignOut).toHaveBeenCalledOnce();
+  },
+};
+
+export const SignedInMobile: Story = { args: SignedIn.args };
+
+export const SignedOutHasNoAccount: Story = {
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).queryByRole('button', { name: 'Sign out' })).toBeNull();
+  },
 };

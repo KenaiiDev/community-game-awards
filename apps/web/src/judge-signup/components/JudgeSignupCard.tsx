@@ -19,7 +19,6 @@ export interface JudgeSignupCardProps {
   signInUrl: string;
   onConsentChange(consent: boolean): void;
   onSubmit(): void;
-  onSignOut(): void;
   onRetry(): void;
 }
 
@@ -79,17 +78,13 @@ function CheckIcon() {
   );
 }
 
-function AccountRow({ user, onSignOut }: { user: { displayName: string; avatarUrl: string | null }; onSignOut(): void }) {
+/** Who is applying. Signing out lives in the page header. */
+function Identity({ user }: { user: { displayName: string; avatarUrl: string | null } }) {
   const t = useTranslations('signup');
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg bg-ink-800 px-4 py-3 text-left">
-      <div className="flex min-w-0 items-center gap-3">
-        <Avatar name={user.displayName} src={user.avatarUrl} />
-        <span className="truncate text-sm text-ink-200">{t('signedInAs', { name: user.displayName })}</span>
-      </div>
-      <Button variant="ghost" onClick={onSignOut}>
-        {t('signOut')}
-      </Button>
+    <div className="flex items-center gap-3 rounded-lg bg-ink-800 px-4 py-3 text-left">
+      <Avatar name={user.displayName} src={user.avatarUrl} />
+      <span className="truncate text-sm text-ink-200">{t('signedInAs', { name: user.displayName })}</span>
     </div>
   );
 }
@@ -112,7 +107,6 @@ export function JudgeSignupCard({
   signInUrl,
   onConsentChange,
   onSubmit,
-  onSignOut,
   onRetry,
 }: JudgeSignupCardProps) {
   const t = useTranslations('signup');
@@ -197,7 +191,7 @@ export function JudgeSignupCard({
             onSubmit();
           }}
         >
-          <AccountRow user={view.user} onSignOut={onSignOut} />
+          <Identity user={view.user} />
           <label
             className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 text-sm leading-6 transition-colors duration-200 ${
               view.consent ? 'border-gold-400/60 bg-gold-400/10 text-ink-50' : 'border-ink-700 text-ink-200 hover:border-ink-400'
@@ -239,9 +233,6 @@ export function JudgeSignupCard({
           <p className="animate-rise text-sm leading-6 text-ink-200" style={{ '--i': 3 } as CSSProperties}>
             {t('appliedBody', { edition: view.edition.name, date: date(view.application.consentedAt) })}
           </p>
-          <div className="pt-2">
-            <AccountRow user={view.user} onSignOut={onSignOut} />
-          </div>
         </div>
       );
       break;
