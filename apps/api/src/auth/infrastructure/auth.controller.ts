@@ -9,6 +9,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import type { CookieOptions, Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../../config/app-config.js';
@@ -23,6 +24,7 @@ import {
 import { SignInWithDiscord } from '../application/sign-in-with-discord.use-case.js';
 import { SESSION_TTL_SECONDS } from './jose-session-tokens.js';
 import { SESSION_COOKIE } from './session.guard.js';
+import { RATE_LIMITS } from '../../rate-limit/rate-limits.js';
 
 const STATE_COOKIE = 'oauth_state';
 const STATE_TTL_MS = 10 * 60 * 1000;
@@ -49,6 +51,7 @@ export class AuthController {
   }
 
   @Get('discord')
+  @Throttle({ default: RATE_LIMITS.auth })
   start(@Res() res: Response) {
     const state = randomBytes(32).toString('base64url');
     res.cookie(STATE_COOKIE, state, this.cookieOptions(STATE_TTL_MS));
@@ -56,6 +59,7 @@ export class AuthController {
   }
 
   @Get('discord/callback')
+  @Throttle({ default: RATE_LIMITS.auth })
   async callback(
     @Req() req: Request,
     @Res() res: Response,

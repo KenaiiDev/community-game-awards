@@ -5,6 +5,12 @@ export interface AppConfig {
   webUrl: string;
   sessionSecret: string;
   cookieSecure: boolean;
+  /** Trust X-Forwarded-For from the platform (true on Vercel) to read the client IP. */
+  trustProxy: boolean;
+  /** Shared with the web app's proxy, which forwards the visitor's IP; null disables it. */
+  proxySecret: string | null;
+  /** Bearer token Vercel Cron sends to the purge endpoint; null disables the endpoint. */
+  cronSecret: string | null;
   discord: { clientId: string; clientSecret: string; redirectUri: string };
 }
 
@@ -16,6 +22,9 @@ const envSchema = z.object({
   WEB_URL: z.url(),
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),
   COOKIE_SECURE: z.enum(['true', 'false']).default('true'),
+  TRUST_PROXY: z.enum(['true', 'false']).default('false'),
+  PROXY_SECRET: z.string().min(32, 'PROXY_SECRET must be at least 32 characters').optional(),
+  CRON_SECRET: z.string().min(32, 'CRON_SECRET must be at least 32 characters').optional(),
   DISCORD_CLIENT_ID: z.string().min(1),
   DISCORD_CLIENT_SECRET: z.string().min(1),
   DISCORD_REDIRECT_URI: z.url(),
@@ -27,6 +36,9 @@ export function loadAppConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     webUrl: parsed.WEB_URL.replace(/\/$/, ''),
     sessionSecret: parsed.SESSION_SECRET,
     cookieSecure: parsed.COOKIE_SECURE === 'true',
+    trustProxy: parsed.TRUST_PROXY === 'true',
+    proxySecret: parsed.PROXY_SECRET ?? null,
+    cronSecret: parsed.CRON_SECRET ?? null,
     discord: {
       clientId: parsed.DISCORD_CLIENT_ID,
       clientSecret: parsed.DISCORD_CLIENT_SECRET,

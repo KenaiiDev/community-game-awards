@@ -20,6 +20,9 @@ const config: AppConfig = {
   webUrl: 'http://web.test',
   sessionSecret: 'test-session-secret-that-is-at-least-32-chars',
   cookieSecure: false,
+  trustProxy: false,
+  proxySecret: null,
+  cronSecret: null,
   discord: { clientId: 'cid', clientSecret: 'secret', redirectUri: 'http://web.test/api/auth/discord/callback' },
 };
 
@@ -178,6 +181,7 @@ describe('Judge signup (e2e)', () => {
           avatarUrl: 'https://cdn.discordapp.com/avatars/111/abc.png',
         },
         application: null,
+        deletion: null,
       });
     });
   });
@@ -235,6 +239,40 @@ describe('Judge signup (e2e)', () => {
         .set('Cookie', session)
         .send({ consent: true })
         .expect(403);
+      expect(res.body.code).toBe('signup_closed');
+    });
+  });
+
+  describe('DELETE /judge-applications/current', () => {
+    it('returns 401 without a session', async () => {
+      app = await createApp();
+      await request(app.getHttpServer()).delete('/judge-applications/current').expect(401);
+    });
+
+    it('withdraws the application, removes it from /me, and allows applying again', async () => {
+      app = await createApp();
+      const session = await signIn(app);
+      await request(app.getHttpServer()).post('/judge-applications').set('Cookie', session).send({ consent: true }).expect(201);
+
+      const res = await request(app.getHttpServer()).delete('/judge-applications/current').set('Cookie', session).expect(204);
+      expect(res.text).toBe('');
+
+      const me = await request(app.getHttpServer()).get('/me').set('Cookie', session).expect(200);
+      expect(me.body.application).toBeNull();
+      await request(app.getHttpServer()).post('/judge-applications').set('Cookie', session).send({ consent: true }).expect(201);
+    });
+
+    it('returns 404 not_applied when there is nothing to withdraw', async () => {
+      app = await createApp();
+      const session = await signIn(app);
+      const res = await request(app.getHttpServer()).delete('/judge-applications/current').set('Cookie', session).expect(404);
+      expect(res.body.code).toBe('not_applied');
+    });
+
+    it('returns 403 signup_closed once signup is closed', async () => {
+      app = await createApp({ now: new Date('2026-12-02T00:00:00Z') });
+      const session = await signIn(app);
+      const res = await request(app.getHttpServer()).delete('/judge-applications/current').set('Cookie', session).expect(403);
       expect(res.body.code).toBe('signup_closed');
     });
   });

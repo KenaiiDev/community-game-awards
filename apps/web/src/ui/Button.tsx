@@ -1,6 +1,6 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
 
-type Variant = 'primary' | 'discord' | 'ghost';
+type Variant = 'primary' | 'discord' | 'ghost' | 'danger';
 
 // Game-menu buttons: cut corners, a "▶" cursor that slides in on hover and focus,
 // a lift on hover and a press when clicked. The focus outline is drawn inside the
@@ -11,6 +11,8 @@ const base =
 const variants: Record<Variant, string> = {
   primary: '[--cut:10px] hover:-translate-y-0.5 active:translate-y-0 px-7 py-3 text-sm bg-lime-400 text-ink-950 hover:bg-lime-300 focus-visible:outline-ink-950',
   discord: '[--cut:10px] hover:-translate-y-0.5 active:translate-y-0 px-7 py-3 text-sm bg-discord text-white hover:bg-discord-hover focus-visible:outline-white',
+  danger:
+    '[--cut:8px] px-4 py-2 text-xs bg-danger text-ink-950 hover:brightness-110 focus-visible:outline-ink-950',
   ghost:
     '[--cut:6px] px-3 py-2 text-xs text-ink-200 before:hidden hover:bg-ink-800 hover:text-ink-50 focus-visible:outline-ink-400',
 };

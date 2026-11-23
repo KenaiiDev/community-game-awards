@@ -22,6 +22,9 @@ const config: AppConfig = {
   webUrl: 'http://web.test',
   sessionSecret: SECRET,
   cookieSecure: true,
+  trustProxy: false,
+  proxySecret: null,
+  cronSecret: null,
   discord: { clientId: 'cid', clientSecret: CLIENT_SECRET, redirectUri: 'http://web.test/api/auth/discord/callback' },
 };
 const edition = {

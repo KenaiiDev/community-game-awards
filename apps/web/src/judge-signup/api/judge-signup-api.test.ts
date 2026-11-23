@@ -58,6 +58,27 @@ describe('judge signup API client', () => {
     });
   });
 
+  it('withdraws the current application with a DELETE', async () => {
+    const { fn, calls } = fakeFetch(204);
+    await createJudgeSignupApi(fn).withdraw();
+    expect(calls[0]).toMatchObject({
+      url: '/api/judge-applications/current',
+      init: { method: 'DELETE', credentials: 'same-origin' },
+    });
+  });
+
+  it('requests account deletion and reads back the scheduled date', async () => {
+    const { fn, calls } = fakeFetch(202, { scheduledFor: '2026-12-02T12:00:00.000Z' });
+    await expect(createJudgeSignupApi(fn).requestDeletion()).resolves.toEqual({ scheduledFor: '2026-12-02T12:00:00.000Z' });
+    expect(calls[0]).toMatchObject({ url: '/api/me/deletion', init: { method: 'POST' } });
+  });
+
+  it('cancels a pending account deletion with a DELETE', async () => {
+    const { fn, calls } = fakeFetch(204);
+    await createJudgeSignupApi(fn).cancelDeletion();
+    expect(calls[0]).toMatchObject({ url: '/api/me/deletion', init: { method: 'DELETE' } });
+  });
+
   it('signs out with a POST', async () => {
     const { fn, calls } = fakeFetch(204);
     await createJudgeSignupApi(fn).signOut();

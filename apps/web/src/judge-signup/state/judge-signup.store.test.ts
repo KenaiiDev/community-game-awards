@@ -27,6 +27,9 @@ function fakeApi(overrides: Partial<JudgeSignupApi> = {}): JudgeSignupApi & { ap
       return application;
     },
     signOut: async () => {},
+    withdraw: async () => {},
+    requestDeletion: async () => ({ scheduledFor: '2026-12-02T12:00:00.000Z' }),
+    cancelDeletion: async () => {},
     ...overrides,
   };
   return api;
@@ -50,7 +53,7 @@ describe('judge signup store', () => {
   });
 
   it('shows the consent form, unchecked, for a signed-in user without an application', async () => {
-    const store = createJudgeSignupStore(fakeApi({ getMe: async () => ({ user, application: null }) }));
+    const store = createJudgeSignupStore(fakeApi({ getMe: async () => ({ user, application: null, deletion: null }) }));
     await store.getState().load();
     expect(store.getState().view).toEqual({
       kind: 'ready',
@@ -65,7 +68,7 @@ describe('judge signup store', () => {
     const store = createJudgeSignupStore(
       fakeApi({
         getCurrentEdition: async () => ({ ...openEdition, signupStatus: 'closed' }),
-        getMe: async () => ({ user, application }),
+        getMe: async () => ({ user, application, deletion: null }),
       }),
     );
     await store.getState().load();
@@ -96,7 +99,7 @@ describe('judge signup store', () => {
   });
 
   it('does not submit without consent', async () => {
-    const api = fakeApi({ getMe: async () => ({ user, application: null }) });
+    const api = fakeApi({ getMe: async () => ({ user, application: null, deletion: null }) });
     const store = createJudgeSignupStore(api);
     await store.getState().load();
 
@@ -107,7 +110,7 @@ describe('judge signup store', () => {
   });
 
   it('submits after consent and switches to the confirmation', async () => {
-    const api = fakeApi({ getMe: async () => ({ user, application: null }) });
+    const api = fakeApi({ getMe: async () => ({ user, application: null, deletion: null }) });
     const store = createJudgeSignupStore(api);
     await store.getState().load();
 
@@ -124,7 +127,7 @@ describe('judge signup store', () => {
   it('keeps the form and shows the API error code when submitting fails', async () => {
     const store = createJudgeSignupStore(
       fakeApi({
-        getMe: async () => ({ user, application: null }),
+        getMe: async () => ({ user, application: null, deletion: null }),
         apply: async () => { throw new ApiError(403, 'signup_closed'); },
       }),
     );
@@ -144,7 +147,7 @@ describe('judge signup store', () => {
     let applied = false;
     const store = createJudgeSignupStore(
       fakeApi({
-        getMe: async () => ({ user, application: applied ? application : null }),
+        getMe: async () => ({ user, application: applied ? application : null, deletion: null }),
         apply: async () => {
           applied = true;
           throw new ApiError(409, 'already_applied');
@@ -161,7 +164,7 @@ describe('judge signup store', () => {
   it('returns to sign-in when the session expired before submitting', async () => {
     const store = createJudgeSignupStore(
       fakeApi({
-        getMe: async () => ({ user, application: null }),
+        getMe: async () => ({ user, application: null, deletion: null }),
         apply: async () => { throw new ApiError(401, 'unauthenticated'); },
       }),
     );
@@ -175,7 +178,7 @@ describe('judge signup store', () => {
   it('maps unexpected submit failures to a generic error', async () => {
     const store = createJudgeSignupStore(
       fakeApi({
-        getMe: async () => ({ user, application: null }),
+        getMe: async () => ({ user, application: null, deletion: null }),
         apply: async () => { throw new TypeError('fetch failed'); },
       }),
     );
@@ -187,11 +190,113 @@ describe('judge signup store', () => {
   });
 
   it('signs out back to the sign-in view', async () => {
-    const store = createJudgeSignupStore(fakeApi({ getMe: async () => ({ user, application: null }) }));
+    const store = createJudgeSignupStore(fakeApi({ getMe: async () => ({ user, application: null, deletion: null }) }));
     await store.getState().load();
 
     await store.getState().signOut();
 
     expect(store.getState().view).toEqual({ kind: 'signed_out', edition: openEdition });
+  });
+
+  describe('withdrawing an application', () => {
+    const applied = { getMe: async (): Promise<Me | null> => ({ user, application, deletion: null }) };
+
+    it('returns to an unchecked consent form after withdrawing', async () => {
+      let withdrawn = 0;
+      const store = createJudgeSignupStore(fakeApi({ ...applied, withdraw: async () => void (withdrawn += 1) }));
+      await store.getState().load();
+
+      const pending = store.getState().withdraw();
+      expect(store.getState().view).toMatchObject({ kind: 'applied', withdrawing: true });
+      await pending;
+
+      expect(withdrawn).toBe(1);
+      expect(store.getState().view).toEqual({ kind: 'ready', edition: openEdition, user, consent: false, submitting: false });
+    });
+
+    it('keeps the application and shows why when signup already closed', async () => {
+      const store = createJudgeSignupStore(
+        fakeApi({ ...applied, withdraw: async () => { throw new ApiError(403, 'signup_closed'); } }),
+      );
+      await store.getState().load();
+      await store.getState().withdraw();
+      expect(store.getState().view).toMatchObject({ kind: 'applied', withdrawing: false, error: 'signup_closed' });
+    });
+
+    it('reloads when there was nothing to withdraw (e.g. withdrawn in another tab)', async () => {
+      let me: Me | null = { user, application, deletion: null };
+      const store = createJudgeSignupStore(
+        fakeApi({ getMe: async () => me, withdraw: async () => { me = { user, application: null, deletion: null }; throw new ApiError(404, 'not_applied'); } }),
+      );
+      await store.getState().load();
+      await store.getState().withdraw();
+      expect(store.getState().view).toMatchObject({ kind: 'ready', consent: false });
+    });
+
+    it('returns to sign-in when the session expired', async () => {
+      const store = createJudgeSignupStore(
+        fakeApi({ ...applied, withdraw: async () => { throw new ApiError(401, 'unauthenticated'); } }),
+      );
+      await store.getState().load();
+      await store.getState().withdraw();
+      expect(store.getState().view).toEqual({ kind: 'signed_out', edition: openEdition });
+    });
+  });
+
+  describe('account', () => {
+    const signedIn = (deletion: Me['deletion'] = null) => ({ getMe: async (): Promise<Me | null> => ({ user, application: null, deletion }) });
+
+    it('has no account when nobody is signed in', async () => {
+      const store = createJudgeSignupStore(fakeApi());
+      await store.getState().load();
+      expect(store.getState().account).toBeNull();
+    });
+
+    it('knows the signed-in user even when signup is closed, so they can still sign out', async () => {
+      const store = createJudgeSignupStore(
+        fakeApi({ ...signedIn(), getCurrentEdition: async () => ({ ...openEdition, signupStatus: 'closed' }) }),
+      );
+      await store.getState().load();
+      expect(store.getState().view.kind).toBe('closed');
+      expect(store.getState().account).toEqual({ user, deletion: null, busy: false });
+    });
+
+    it('schedules the deletion and shows the date', async () => {
+      const store = createJudgeSignupStore(fakeApi(signedIn()));
+      await store.getState().load();
+
+      const pending = store.getState().requestDeletion();
+      expect(store.getState().account).toMatchObject({ busy: true });
+      await pending;
+
+      expect(store.getState().account).toEqual({
+        user,
+        deletion: { scheduledFor: '2026-12-02T12:00:00.000Z' },
+        busy: false,
+      });
+    });
+
+    it('cancels a pending deletion', async () => {
+      const store = createJudgeSignupStore(fakeApi(signedIn({ scheduledFor: '2026-12-02T12:00:00.000Z' })));
+      await store.getState().load();
+      await store.getState().cancelDeletion();
+      expect(store.getState().account).toEqual({ user, deletion: null, busy: false });
+    });
+
+    it('keeps the account and shows the error code when the request fails', async () => {
+      const store = createJudgeSignupStore(
+        fakeApi({ ...signedIn(), requestDeletion: async () => { throw new ApiError(429, 'rate_limited'); } }),
+      );
+      await store.getState().load();
+      await store.getState().requestDeletion();
+      expect(store.getState().account).toEqual({ user, deletion: null, busy: false, error: 'rate_limited' });
+    });
+
+    it('forgets the account on sign-out', async () => {
+      const store = createJudgeSignupStore(fakeApi(signedIn()));
+      await store.getState().load();
+      await store.getState().signOut();
+      expect(store.getState().account).toBeNull();
+    });
   });
 });

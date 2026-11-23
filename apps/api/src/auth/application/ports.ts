@@ -1,4 +1,4 @@
-import type { DiscordProfile, User } from '../domain/user.js';
+import type { DiscordProfile, DiscordUserData, User } from '../domain/user.js';
 
 export interface DiscordOAuth {
   authorizeUrl(state: string): string;
@@ -9,7 +9,12 @@ export interface DiscordOAuth {
 export interface UserRepository {
   findById(id: string): Promise<User | null>;
   findByDiscordId(discordId: string): Promise<User | null>;
-  upsertByDiscordId(data: Omit<User, 'id'>): Promise<User>;
+  upsertByDiscordId(data: DiscordUserData): Promise<User>;
+  /** Flags the user for deletion unless already flagged; resolves the effective request time, or null if the user is gone. */
+  requestDeletion(id: string, at: Date): Promise<Date | null>;
+  cancelDeletion(id: string): Promise<void>;
+  /** Deletes users flagged at or before `cutoff`, with their applications; resolves the count. */
+  purgeDeletionsRequestedBefore(cutoff: Date): Promise<number>;
 }
 
 export interface SessionTokens {

@@ -1,10 +1,11 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
-import type { CSSProperties, ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { Avatar } from '@/ui/Avatar';
 import { Button, ButtonLink } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
+import { PrivacyLink } from '@/legal/PrivacyLink';
 import type { SignupView } from '../state/judge-signup.store';
 
 const KNOWN_ERRORS = [
@@ -13,6 +14,7 @@ const KNOWN_ERRORS = [
   'signup_not_open',
   'consent_required',
   'unauthenticated',
+  'rate_limited',
 ] as const;
 
 export interface JudgeSignupCardProps {
@@ -20,6 +22,7 @@ export interface JudgeSignupCardProps {
   signInUrl: string;
   onConsentChange(consent: boolean): void;
   onSubmit(): void;
+  onWithdraw(): void;
   onRetry(): void;
 }
 
@@ -146,10 +149,13 @@ export function JudgeSignupCard({
   signInUrl,
   onConsentChange,
   onSubmit,
+  onWithdraw,
   onRetry,
 }: JudgeSignupCardProps) {
   const t = useTranslations('signup');
   const format = useFormatter();
+  // Withdrawing asks for confirmation first; purely local UI state.
+  const [confirmingWithdraw, setConfirmingWithdraw] = useState(false);
   // Deadlines are defined in UTC, so the zone is always printed next to the time.
   const date = (iso: string) =>
     format.dateTime(new Date(iso), {
@@ -247,6 +253,9 @@ export function JudgeSignupCard({
             </span>
             <span>{t('consent')}</span>
           </label>
+          <p className="-mt-2 text-xs text-ink-400">
+            <PrivacyLink>{t('privacyLink')}</PrivacyLink>
+          </p>
           {view.error && <Notice tone="danger">{t(`error.${errorKey}`)}</Notice>}
           <Button type="submit" className="w-full" disabled={!view.consent || view.submitting}>
             {view.submitting ? t('submitting') : t('submit')}
@@ -275,6 +284,34 @@ export function JudgeSignupCard({
           <p className="animate-rise text-sm leading-6 text-ink-200" style={{ '--i': 3 } as CSSProperties}>
             {t('appliedBody', { edition: view.edition.name, date: date(view.application.consentedAt) })}
           </p>
+          {view.error && (
+            <Notice tone="danger">
+              {t(`withdrawError.${view.error === 'signup_closed' || view.error === 'rate_limited' ? view.error : 'unknown'}`)}
+            </Notice>
+          )}
+          {view.edition.signupStatus !== 'open' ? null : confirmingWithdraw && !view.withdrawing ? (
+            <div className="space-y-3 border border-danger/40 bg-danger/10 p-4 text-left">
+              <p className="text-sm text-ink-50">{t('withdrawConfirm', { edition: view.edition.name })}</p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    setConfirmingWithdraw(false);
+                    onWithdraw();
+                  }}
+                >
+                  {t('withdrawYes')}
+                </Button>
+                <Button variant="ghost" onClick={() => setConfirmingWithdraw(false)}>
+                  {t('withdrawKeep')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button variant="ghost" disabled={view.withdrawing} onClick={() => setConfirmingWithdraw(true)}>
+              {view.withdrawing ? t('withdrawing') : t('withdraw')}
+            </Button>
+          )}
         </div>
       );
       break;

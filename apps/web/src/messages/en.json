@@ -65,7 +65,8 @@
     "signIn": "Sign in with Discord",
     "authError": {
       "state": "Your sign-in session expired. Please try again.",
-      "discord": "Discord sign-in didn't complete. Please try again."
+      "discord": "Discord sign-in didn't complete. Please try again.",
+      "rate_limited": "Too many sign-in attempts. Wait a minute and try again."
     },
     "signOut": "Sign out",
     "consent": "I agree that my Discord identity (name and avatar) and all my nominations will be public.",
@@ -78,7 +79,8 @@
       "signup_not_open": "Signup hasn't opened yet.",
       "consent_required": "You need to accept the public identity terms to apply.",
       "unauthenticated": "Your session expired. Please sign in again.",
-      "unknown": "Something went wrong. Please try again."
+      "unknown": "Something went wrong. Please try again.",
+      "rate_limited": "Too many attempts. Wait a minute and try again."
     },
     "appliedTitle": "You're in the draw",
     "appliedBody": "Your application for {edition} was received {date}. Selected judges will be announced after signup closes.",
@@ -91,16 +93,29 @@
       "submit": "Send your application",
       "done": "Done"
     },
-    "achievement": "Achievement unlocked"
+    "achievement": "Achievement unlocked",
+    "withdraw": "Withdraw application",
+    "withdrawConfirm": "Withdraw your application to {edition}? You can apply again while signup is open.",
+    "withdrawYes": "Yes, withdraw",
+    "withdrawKeep": "Keep it",
+    "withdrawing": "Withdrawing…",
+    "withdrawError": {
+      "signup_closed": "Signup has closed, so the application can no longer be withdrawn. You can still delete your data from your account.",
+      "unknown": "We couldn't withdraw your application. Please try again.",
+      "rate_limited": "Too many attempts. Wait a minute and try again."
+    },
+    "privacyLink": "Privacy policy"
   },
   "footer": {
-    "openSource": "Open source and community run."
+    "openSource": "Open source and community run.",
+    "privacy": "Privacy"
   },
   "menu": {
     "label": "Main menu",
     "quest": "Quest",
     "log": "Quest log",
     "rules": "Rules",
+    "account": "Account",
     "language": "Language",
     "hint": "↑ ↓ to move"
   },
@@ -112,6 +127,69 @@
     "label": "Error 404",
     "title": "This level doesn't exist",
     "body": "The page you're looking for isn't here. It may have moved, or the link is wrong.",
+    "back": "Back to the main menu"
+  },
+  "account": {
+    "title": "Your account",
+    "signedInAs": "Signed in with Discord as {name}",
+    "dataTitle": "Your data",
+    "dataBody": "We store your Discord username, display name and avatar, and your judge applications. Nothing else.",
+    "delete": "Delete my data",
+    "deletePrompt": "Your account and all your applications will be deleted on {date}, one week from now. You can cancel until then.",
+    "deleteYes": "Yes, delete my data",
+    "deleteKeep": "Keep my account",
+    "pending": "Your data will be deleted on {date}.",
+    "pendingBody": "Changed your mind? You can cancel until then.",
+    "cancel": "Cancel deletion",
+    "error": {
+      "rate_limited": "Too many attempts. Wait a minute and try again.",
+      "unknown": "Something went wrong. Please try again."
+    },
+    "privacyLink": "Privacy policy"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: {date}",
+    "intro": "Community Game Awards is an open-source, community-run project. This page explains in plain words what we keep about you and how you stay in control of it.",
+    "who": {
+      "title": "Who we are",
+      "body": "Community Game Awards is run by volunteers. For any question or request about your data, write to <email>address</email>."
+    },
+    "collect": {
+      "title": "What we collect",
+      "discord": "From Discord, only when you sign in: your user ID, username, display name and avatar. We only ask Discord for the \"identify\" permission, so we never see your email, servers or messages.",
+      "applications": "When you apply as a judge: the edition, the date you accepted the terms and the version of those terms.",
+      "cookies": "Cookies, all strictly necessary: one keeps you signed in (30 days), one protects the Discord sign-in (10 minutes), and one remembers the language you picked.",
+      "ip": "Your IP address, for about a minute, to limit abusive traffic. It is kept in memory only and never stored.",
+      "none": "No analytics, no advertising, no tracking. We never sell or share your data."
+    },
+    "public": {
+      "title": "What becomes public",
+      "body": "If you are drawn as a judge, your Discord display name and avatar, and every nomination you make, will be published. That openness is the point of these awards, which is why we ask for your explicit consent before you apply."
+    },
+    "why": {
+      "title": "Why we use it",
+      "body": "To run the judge signup and the public draw, with your consent, and to protect the service from abuse."
+    },
+    "processors": {
+      "title": "Who processes it",
+      "body": "Discord (sign-in), Vercel (hosting of the website and its API) and Neon (database). They process the data only to provide those services, and their servers may be outside your country."
+    },
+    "retention": {
+      "title": "How long we keep it",
+      "body": "Until you delete your account. Deleting it removes everything we hold about you, including your applications."
+    },
+    "choices": {
+      "title": "Your choices",
+      "withdraw": "Withdraw your application while signup is open, from the signup card.",
+      "delete": "Delete all your data yourself from Account in the main menu. Deletion happens one week later, so you can change your mind; after that it is permanent.",
+      "update": "Your profile is refreshed from Discord every time you sign in.",
+      "contact": "For anything else, such as a copy of your data, a correction or a question, write to <email>address</email>."
+    },
+    "changes": {
+      "title": "Changes to this policy",
+      "body": "If this policy changes, this page and its date will be updated, and significant changes will be announced on the site."
+    },
     "back": "Back to the main menu"
   }
 }
