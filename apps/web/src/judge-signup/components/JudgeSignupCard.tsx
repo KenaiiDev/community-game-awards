@@ -79,17 +79,6 @@ function CheckIcon() {
   );
 }
 
-/** Who is applying. Signing out lives in the page header. */
-function Identity({ user }: { user: { displayName: string; avatarUrl: string | null } }) {
-  const t = useTranslations('signup');
-  return (
-    <div className="flex items-center gap-3 bg-ink-800/70 px-4 py-3 text-left">
-      <Avatar name={user.displayName} src={user.avatarUrl} />
-      <span className="truncate text-sm text-ink-200">{t('signedInAs', { name: user.displayName })}</span>
-    </div>
-  );
-}
-
 const OBJECTIVES = ['signIn', 'consent', 'submit'] as const;
 
 /** Which quest objective is next, or null when the view is not part of the quest. */
@@ -241,7 +230,6 @@ export function JudgeSignupCard({
             onSubmit();
           }}
         >
-          <Identity user={view.user} />
           <label
             className={`flex cursor-pointer items-start gap-3 border p-4 text-sm leading-6 transition-colors duration-200 ${
               view.consent ? 'border-gold-400/60 bg-gold-400/10 text-ink-50' : 'border-ink-700 text-ink-200 hover:border-ink-400'

@@ -2,16 +2,11 @@
   "brand": {
     "name": "Community Game Awards"
   },
-  "nav": {
-    "language": "Language"
-  },
   "hero": {
     "eyebrow": "{edition} · Judge signup open",
     "eyebrowClosed": "{edition}",
     "title": "Game awards decided by players, in the open",
-    "subtitle": "Judges are drawn at random from the community. Every nomination is public, every rule is published before the edition starts, and nobody decides behind closed doors.",
-    "cta": "Accept the quest",
-    "deadline": "Signup closes {date}"
+    "subtitle": "Judges are drawn at random from the community. Every nomination is public, every rule is published before the edition starts, and nobody decides behind closed doors."
   },
   "steps": {
     "title": "Quest log",
@@ -72,7 +67,6 @@
       "state": "Your sign-in session expired. Please try again.",
       "discord": "Discord sign-in didn't complete. Please try again."
     },
-    "signedInAs": "Signed in as {name}",
     "signOut": "Sign out",
     "consent": "I agree that my Discord identity (name and avatar) and all my nominations will be public.",
     "submit": "Apply as a judge",
@@ -101,5 +95,17 @@
   },
   "footer": {
     "openSource": "Open source and community run."
+  },
+  "menu": {
+    "label": "Main menu",
+    "quest": "Quest",
+    "log": "Quest log",
+    "rules": "Rules",
+    "language": "Language",
+    "hint": "↑ ↓ to move"
+  },
+  "hud": {
+    "countdown": "{days}d {hours}h left",
+    "countdownLabel": "Time left to apply"
   }
 }

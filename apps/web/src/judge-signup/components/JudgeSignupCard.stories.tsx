@@ -101,8 +101,7 @@ export const Ready: Story = {
     await expect(canvas.getByRole('button', { name: 'Apply as a judge' })).toBeDisabled();
     await userEvent.click(canvas.getByRole('checkbox'));
     await expect(args.onConsentChange).toHaveBeenCalledWith(true);
-    // The card shows who is applying; signing out lives in the page header.
-    await expect(canvas.getByText('Signed in as Kenaii')).toBeInTheDocument();
+    // Who is signed in, and signing out, live in the app's HUD.
     await expect(canvas.queryByRole('button', { name: 'Sign out' })).toBeNull();
   },
 };

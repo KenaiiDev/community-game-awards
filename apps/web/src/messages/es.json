@@ -2,16 +2,11 @@
   "brand": {
     "name": "Community Game Awards"
   },
-  "nav": {
-    "language": "Idioma"
-  },
   "hero": {
     "eyebrow": "{edition} · Inscripción de jueces abierta",
     "eyebrowClosed": "{edition}",
     "title": "Premios de videojuegos decididos por los jugadores, a la vista de todos",
-    "subtitle": "Los jueces se sortean entre la comunidad. Todas las nominaciones son públicas, todas las reglas se publican antes de que empiece la edición y nadie decide a puertas cerradas.",
-    "cta": "Aceptar la misión",
-    "deadline": "La inscripción cierra el {date}"
+    "subtitle": "Los jueces se sortean entre la comunidad. Todas las nominaciones son públicas, todas las reglas se publican antes de que empiece la edición y nadie decide a puertas cerradas."
   },
   "steps": {
     "title": "Registro de misiones",
@@ -72,7 +67,6 @@
       "state": "Tu sesión de inicio expiró. Vuelve a intentarlo.",
       "discord": "El inicio de sesión con Discord no se completó. Vuelve a intentarlo."
     },
-    "signedInAs": "Sesión iniciada como {name}",
     "signOut": "Cerrar sesión",
     "consent": "Acepto que mi identidad de Discord (nombre y avatar) y todas mis nominaciones sean públicas.",
     "submit": "Postularme como juez",
@@ -101,5 +95,17 @@
   },
   "footer": {
     "openSource": "Código abierto, gestionado por la comunidad."
+  },
+  "menu": {
+    "label": "Menú principal",
+    "quest": "Misión",
+    "log": "Registro de misiones",
+    "rules": "Reglas",
+    "language": "Idioma",
+    "hint": "↑ ↓ para navegar"
+  },
+  "hud": {
+    "countdown": "Quedan {days} d {hours} h",
+    "countdownLabel": "Tiempo restante para postularse"
   }
 }

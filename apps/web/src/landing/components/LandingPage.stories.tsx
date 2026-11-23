@@ -39,52 +39,110 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** The main menu and its screens, as announced to assistive tech. */
+function menu(canvasElement: HTMLElement, label = 'Main menu') {
+  const canvas = within(canvasElement);
+  const tablist = canvas.getByRole('tablist', { name: label });
+  return {
+    tabs: within(tablist).getAllByRole('tab'),
+    tab: (name: string) => within(tablist).getByRole('tab', { name }),
+    screen: () => canvas.getByRole('tabpanel'),
+  };
+}
+
+function reducedMotionCheck(element: Element) {
+  // Content enters with motion, except for visitors who asked for reduced motion.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const name = getComputedStyle(element).animationName;
+  return reduced ? expect(name).toBe('none') : expect(name).not.toBe('none');
+}
+
 export const SignupOpen: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const heading = canvas.getByRole('heading', { level: 1 });
     await expect(heading).toHaveTextContent('Game awards decided by players');
-    // Content enters with motion, except for visitors who asked for reduced motion.
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const animation = getComputedStyle(heading).animationName;
-    if (reduced) await expect(animation).toBe('none');
-    else await expect(animation).not.toBe('none');
-    // The background drifts slowly behind the page, also only without reduced motion.
+    await reducedMotionCheck(heading);
+    // The background drifts slowly behind the app, also only without reduced motion.
     const ambient = canvas.getByTestId('ambient');
     await expect(ambient).toHaveAttribute('aria-hidden', 'true');
-    for (const layer of ambient.children) {
-      const drift = getComputedStyle(layer).animationName;
-      if (reduced) await expect(drift).toBe('none');
-      else await expect(drift).not.toBe('none');
-    }
-    await expect(canvas.getByRole('link', { name: 'Accept the quest' })).toHaveAttribute('href', '#judge-signup');
-    // The edition is a quest log: signup is the current stage, the rest are locked.
-    const stages = within(canvas.getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
-    await expect(stages).toHaveLength(6);
-    await expect(stages[0]).toHaveAttribute('aria-current', 'step');
-    await expect(within(stages[0]).getByText('You are here')).toBeInTheDocument();
-    for (const stage of stages.slice(1)) await expect(within(stage).getByText('Locked')).toBeInTheDocument();
-    // The language menu is collapsed until opened, then lists every language.
-    await expect(canvas.getByRole('link', { name: 'Español', hidden: true })).not.toBeVisible();
-    await userEvent.click(canvas.getByText('English', { selector: 'summary *' }));
-    await expect(canvas.getByRole('link', { name: 'Español' })).toHaveAttribute('href', '/es');
-    await expect(canvas.getByRole('link', { name: 'English' })).toHaveAttribute('aria-current', 'true');
-    await expect(canvas.getByText('Signup closes December 15, 2026 at 12:00 AM UTC')).toBeInTheDocument();
+    for (const layer of ambient.children) await reducedMotionCheck(layer);
+
+    // An app shell, not a long page: a HUD bar with the edition and the time left...
+    const hud = within(canvas.getByRole('banner'));
+    await expect(hud.getByText('Express 2026 · Judge signup open')).toBeInTheDocument();
+    await expect(hud.getByText('19d 12h left')).toBeInTheDocument();
+
+    // ...and a main menu whose first screen is the quest.
+    const { tabs, tab, screen } = menu(canvasElement);
+    await expect(['Quest', 'Quest log', 'Rules', 'Language'].map((name) => tabs.indexOf(tab(name)))).toEqual([0, 1, 2, 3]);
+    await expect(tab('Quest')).toHaveAttribute('aria-selected', 'true');
+    await expect(within(screen()).getByRole('heading', { name: 'Become a judge' })).toBeInTheDocument();
+    await expect(screen()).toHaveAttribute('aria-labelledby', tab('Quest').id);
   },
 };
 
 export const SignupOpenMobile: Story = {};
 
+export const QuestLog: Story = {
+  play: async ({ canvasElement }) => {
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Quest log'));
+    await expect(tab('Quest log')).toHaveAttribute('aria-selected', 'true');
+    await expect(tab('Quest')).toHaveAttribute('aria-selected', 'false');
+    // The edition is a quest log: signup is the current stage, the rest are locked.
+    const stages = within(within(screen()).getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
+    await expect(stages).toHaveLength(6);
+    await expect(stages[0]).toHaveAttribute('aria-current', 'step');
+    await expect(within(stages[0]).getByText('You are here')).toBeInTheDocument();
+    for (const stage of stages.slice(1)) await expect(within(stage).getByText('Locked')).toBeInTheDocument();
+  },
+};
+
+export const RulesWithKeyboard: Story = {
+  play: async ({ canvasElement }) => {
+    const { tab, screen } = menu(canvasElement);
+    // Like a game menu: arrows move the selection, focus follows, and it wraps.
+    tab('Quest').focus();
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+    await expect(tab('Rules')).toHaveAttribute('aria-selected', 'true');
+    await expect(tab('Rules')).toHaveFocus();
+    await expect(within(screen()).getByRole('heading', { name: 'Rules of the game' })).toBeInTheDocument();
+    await userEvent.keyboard('{ArrowUp}{ArrowUp}{ArrowUp}');
+    await expect(tab('Language')).toHaveFocus();
+    await userEvent.keyboard('{Home}');
+    await expect(tab('Quest')).toHaveAttribute('aria-selected', 'true');
+    await userEvent.keyboard('{End}{ArrowUp}');
+    await expect(tab('Rules')).toHaveAttribute('aria-selected', 'true');
+    // Only the selected entry is in the tab order.
+    await expect(tab('Rules')).toHaveAttribute('tabindex', '0');
+    await expect(tab('Quest')).toHaveAttribute('tabindex', '-1');
+  },
+};
+
+export const Language: Story = {
+  play: async ({ canvasElement }) => {
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Language'));
+    const options = within(screen());
+    await expect(options.getByRole('link', { name: 'Español' })).toHaveAttribute('href', '/es');
+    await expect(options.getByRole('link', { name: 'English' })).toHaveAttribute('aria-current', 'true');
+  },
+};
+
 export const SignupOpenSpanish: Story = {
   args: { locale: 'es' },
   parameters: { locale: 'es' },
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await expect(canvas.getByRole('link', { name: 'Aceptar la misión' })).toBeInTheDocument();
-    await userEvent.click(canvas.getByText('Español', { selector: 'summary *' }));
+    const { tabs, tab, screen } = menu(canvasElement, 'Menú principal');
+    await expect(
+      ['Misión', 'Registro de misiones', 'Reglas', 'Idioma'].map((name) => tabs.indexOf(tab(name))),
+    ).toEqual([0, 1, 2, 3]);
+    await expect(within(canvasElement).getByText('Quedan 19 d 12 h')).toBeInTheDocument();
+    await userEvent.click(tab('Idioma'));
     // "/en" (not "/") so the middleware updates the remembered locale cookie;
     // "/" would redirect a Spanish visitor straight back to "/es".
-    await expect(canvas.getByRole('link', { name: 'English' })).toHaveAttribute('href', '/en');
+    await expect(within(screen()).getByRole('link', { name: 'English' })).toHaveAttribute('href', '/en');
   },
 };
 
@@ -95,9 +153,12 @@ export const SignupClosed: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.queryByRole('link', { name: 'Accept the quest' })).toBeNull();
+    // Nothing to count down to once signup is closed.
+    await expect(canvas.queryByText(/left$/)).toBeNull();
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Quest log'));
     // No stage is marked current once signup is closed.
-    const stages = within(canvas.getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
+    const stages = within(within(screen()).getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
     for (const stage of stages) await expect(stage).not.toHaveAttribute('aria-current');
   },
 };
