@@ -116,6 +116,9 @@ export const ReadyWithConsent: Story = {
       [false, true],
     ]);
     const submit = within(canvasElement).getByRole('button', { name: 'Apply as a judge' });
+    // The "▶" menu cursor is decorative: its alt text is empty, so screen readers
+    // don't announce it as part of the button name.
+    await expect(getComputedStyle(submit, '::before').content).toBe('"▶" / ""');
     await expect(submit).toBeEnabled();
     await userEvent.click(submit);
     await expect(args.onSubmit).toHaveBeenCalledOnce();
