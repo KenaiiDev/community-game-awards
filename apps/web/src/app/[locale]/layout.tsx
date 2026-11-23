@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
+import { DEFAULT_LOCALE, LOCALES, localeDirection } from '@/i18n/locales';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -15,7 +16,11 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
   return {
     title: t('brand.name'),
     description: t('hero.subtitle'),
-    alternates: { languages: { en: '/', es: '/es' } },
+    alternates: {
+      languages: Object.fromEntries(
+        LOCALES.map(({ code }) => [code, code === DEFAULT_LOCALE ? '/' : `/${code}`]),
+      ),
+    },
   };
 }
 
@@ -25,7 +30,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
+    <html lang={locale} dir={localeDirection(locale)}>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

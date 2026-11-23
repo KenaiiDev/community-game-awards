@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { expect, fn, within } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { LandingPage } from './LandingPage';
 import { JudgeSignupCard } from '@/judge-signup/components/JudgeSignupCard';
 import type { Edition } from '@/judge-signup/api/types';
@@ -29,7 +29,6 @@ function signup(view: SignupView) {
 const meta = {
   title: 'Landing/LandingPage',
   component: LandingPage,
-  parameters: { padded: false },
   decorators: [(Story) => <div className="-m-6"><Story /></div>],
   args: {
     locale: 'en',
@@ -46,7 +45,11 @@ export const SignupOpen: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('heading', { level: 1 })).toHaveTextContent('Game awards decided by players');
     await expect(canvas.getByRole('link', { name: 'Apply as a judge' })).toHaveAttribute('href', '#judge-signup');
+    // The language menu is collapsed until opened, then lists every language.
+    await expect(canvas.getByRole('link', { name: 'Español', hidden: true })).not.toBeVisible();
+    await userEvent.click(canvas.getByText('English', { selector: 'summary *' }));
     await expect(canvas.getByRole('link', { name: 'Español' })).toHaveAttribute('href', '/es');
+    await expect(canvas.getByRole('link', { name: 'English' })).toHaveAttribute('aria-current', 'true');
     await expect(canvas.getByText('Signup closes December 15, 2026 at 12:00 AM UTC')).toBeInTheDocument();
   },
 };
@@ -59,6 +62,7 @@ export const SignupOpenSpanish: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('link', { name: 'Postularme como juez' })).toBeInTheDocument();
+    await userEvent.click(canvas.getByText('Español', { selector: 'summary *' }));
     // "/en" (not "/") so the middleware updates the remembered locale cookie;
     // "/" would redirect a Spanish visitor straight back to "/es".
     await expect(canvas.getByRole('link', { name: 'English' })).toHaveAttribute('href', '/en');

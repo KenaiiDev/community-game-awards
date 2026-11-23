@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { ButtonLink } from '@/ui/Button';
 import type { Edition } from '@/judge-signup/api/types';
+import { LOCALES } from '@/i18n/locales';
 
 export interface LandingPageProps {
   locale: string;
@@ -12,12 +13,6 @@ export interface LandingPageProps {
   signup: ReactNode;
 }
 
-// Explicit prefixes on purpose: the middleware remembers the chosen locale in a
-// cookie, and only a prefixed URL updates it ("/en" redirects to "/" afterwards).
-const LOCALES = [
-  { code: 'en', label: 'English', href: '/en' },
-  { code: 'es', label: 'Español', href: '/es' },
-];
 
 const STEPS = ['signup', 'draw', 'play', 'nominate', 'vote', 'reveal'] as const;
 const PRINCIPLES = ['transparent', 'verifiable', 'fair'] as const;
@@ -26,6 +21,15 @@ function Trophy() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6 fill-gold-400">
       <path d="M18 3V2H6v1H2v3a5 5 0 0 0 4.6 5A6 6 0 0 0 11 14.9V18H8v3h8v-3h-3v-3.1A6 6 0 0 0 17.4 11 5 5 0 0 0 22 6V3h-4ZM4 6V5h2v3.8A3 3 0 0 1 4 6Zm16 0a3 3 0 0 1-2 2.8V5h2v1Z" />
+    </svg>
+  );
+}
+
+function Globe() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current" strokeWidth="2">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z" />
     </svg>
   );
 }
@@ -53,20 +57,35 @@ export function LandingPage({ locale, edition, signup }: LandingPageProps) {
           <Trophy />
           {t('brand.name')}
         </span>
-        <nav aria-label={t('nav.language')} className="flex gap-1 text-sm">
-          {LOCALES.map(({ code, label, href }) => (
-            <a
-              key={code}
-              href={href}
-              hrefLang={code}
-              aria-current={code === locale ? 'true' : undefined}
-              className={`rounded-md px-3 py-1.5 ${
-                code === locale ? 'bg-ink-800 text-ink-50' : 'text-ink-400 hover:text-ink-50'
-              }`}
-            >
-              {label}
-            </a>
-          ))}
+        <nav aria-label={t('nav.language')} className="relative text-sm">
+          {/* <details> keeps the menu usable without JavaScript and scales to any
+              number of community translations. */}
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-1.5 text-ink-200 hover:bg-ink-800 hover:text-ink-50 [&::-webkit-details-marker]:hidden">
+              <Globe />
+              <span>{LOCALES.find((l) => l.code === locale)?.name ?? locale}</span>
+              <span aria-hidden="true" className="text-xs transition-transform group-open:rotate-180">▾</span>
+            </summary>
+            <ul className="absolute right-0 z-10 mt-2 min-w-40 rounded-lg border border-ink-700 bg-ink-900 p-1 shadow-xl shadow-black/40">
+              {LOCALES.map(({ code, name }) => (
+                <li key={code}>
+                  <a
+                    // Always prefixed: the middleware remembers the chosen language in a
+                    // cookie, and only a prefixed URL updates it ("/en" then redirects to "/").
+                    href={`/${code}`}
+                    hrefLang={code}
+                    lang={code}
+                    aria-current={code === locale ? 'true' : undefined}
+                    className={`block rounded-md px-3 py-2 ${
+                      code === locale ? 'bg-ink-800 text-ink-50' : 'text-ink-200 hover:bg-ink-800 hover:text-ink-50'
+                    }`}
+                  >
+                    {name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
         </nav>
       </header>
 

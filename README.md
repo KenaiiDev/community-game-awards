@@ -70,6 +70,27 @@ SIGNUP_OPENS_AT=2026-11-22T00:00:00Z SIGNUP_CLOSES_AT=2026-12-15T00:00:00Z \
 - All dates are UTC. Signup is open from `SIGNUP_OPENS_AT` (inclusive) to `SIGNUP_CLOSES_AT` (exclusive).
 - The active edition is the latest one whose signup has already opened. Creating next year's edition early does not hide the current one.
 
+## Translating
+
+The site picks the visitor's browser language and falls back to English when that language is not available. A language chosen in the menu is remembered and wins over the browser setting.
+
+Adding a language takes two steps and no code:
+
+1. Copy `apps/web/src/messages/en.json` to `apps/web/src/messages/<code>.json` (for example `pt-BR.json`) and translate the values.
+2. Add the language to `apps/web/src/i18n/locales.ts`:
+   ```ts
+   { code: 'pt-BR', name: 'Português (Brasil)' },
+   ```
+   Use the language's own name. Add `dir: 'rtl'` for right-to-left scripts such as Arabic.
+
+Partial translations are welcome: any key you leave out is shown in English. Run `pnpm --filter web test` before opening a pull request. The tests check that you:
+
+- only use keys that exist in `en.json`,
+- keep every `{placeholder}` exactly as in English (`{date}`, `{edition}`, `{name}`),
+- leave no empty strings (remove the key instead).
+
+The new language then appears in the site's language menu, in Storybook's toolbar and in automatic browser detection.
+
 ## Tests
 
 Every behavior is developed test-first.
