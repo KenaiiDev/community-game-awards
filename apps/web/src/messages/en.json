@@ -107,5 +107,11 @@
   "hud": {
     "countdown": "{days}d {hours}h left",
     "countdownLabel": "Time left to apply"
+  },
+  "notFound": {
+    "label": "Error 404",
+    "title": "This level doesn't exist",
+    "body": "The page you're looking for isn't here. It may have moved, or the link is wrong.",
+    "back": "Back to the main menu"
   }
 }
