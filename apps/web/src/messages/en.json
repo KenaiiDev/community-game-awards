@@ -10,11 +10,11 @@
     "eyebrowClosed": "{edition}",
     "title": "Game awards decided by players, in the open",
     "subtitle": "Judges are drawn at random from the community. Every nomination is public, every rule is published before the edition starts, and nobody decides behind closed doors.",
-    "cta": "Apply as a judge",
+    "cta": "Accept the quest",
     "deadline": "Signup closes {date}"
   },
   "steps": {
-    "title": "How an edition works",
+    "title": "Quest log",
     "signup": {
       "title": "Judge signup",
       "body": "Anyone with a Discord account can apply before the deadline."
@@ -38,10 +38,13 @@
     "reveal": {
       "title": "Winners revealed",
       "body": "Results are published together with the full, auditable vote log."
-    }
+    },
+    "stage": "Stage {number}",
+    "current": "You are here",
+    "locked": "Locked"
   },
   "principles": {
-    "title": "Rules first, results later",
+    "title": "Rules of the game",
     "transparent": {
       "title": "Transparent",
       "body": "Judges, nominations and tie-break rules are public."
@@ -84,7 +87,17 @@
       "unknown": "Something went wrong. Please try again."
     },
     "appliedTitle": "You're in the draw",
-    "appliedBody": "Your application for {edition} was received {date}. Selected judges will be announced after signup closes."
+    "appliedBody": "Your application for {edition} was received {date}. Selected judges will be announced after signup closes.",
+    "questLabel": "New quest",
+    "reward": "Reward: help decide this year's awards",
+    "objectives": {
+      "title": "Objectives",
+      "signIn": "Sign in with Discord",
+      "consent": "Agree to judge in public",
+      "submit": "Send your application",
+      "done": "Done"
+    },
+    "achievement": "Achievement unlocked"
   },
   "footer": {
     "openSource": "Open source and community run."

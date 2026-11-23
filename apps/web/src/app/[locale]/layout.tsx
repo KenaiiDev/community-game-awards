@@ -4,6 +4,7 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { DEFAULT_LOCALE, LOCALES, localeDirection } from '@/i18n/locales';
+import '@/ui/fonts';
 import '../globals.css';
 
 export function generateStaticParams() {

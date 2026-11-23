@@ -57,7 +57,13 @@ export const SignupOpen: Story = {
       if (reduced) await expect(drift).toBe('none');
       else await expect(drift).not.toBe('none');
     }
-    await expect(canvas.getByRole('link', { name: 'Apply as a judge' })).toHaveAttribute('href', '#judge-signup');
+    await expect(canvas.getByRole('link', { name: 'Accept the quest' })).toHaveAttribute('href', '#judge-signup');
+    // The edition is a quest log: signup is the current stage, the rest are locked.
+    const stages = within(canvas.getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
+    await expect(stages).toHaveLength(6);
+    await expect(stages[0]).toHaveAttribute('aria-current', 'step');
+    await expect(within(stages[0]).getByText('You are here')).toBeInTheDocument();
+    for (const stage of stages.slice(1)) await expect(within(stage).getByText('Locked')).toBeInTheDocument();
     // The language menu is collapsed until opened, then lists every language.
     await expect(canvas.getByRole('link', { name: 'Español', hidden: true })).not.toBeVisible();
     await userEvent.click(canvas.getByText('English', { selector: 'summary *' }));
@@ -74,7 +80,7 @@ export const SignupOpenSpanish: Story = {
   parameters: { locale: 'es' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('link', { name: 'Postularme como juez' })).toBeInTheDocument();
+    await expect(canvas.getByRole('link', { name: 'Aceptar la misión' })).toBeInTheDocument();
     await userEvent.click(canvas.getByText('Español', { selector: 'summary *' }));
     // "/en" (not "/") so the middleware updates the remembered locale cookie;
     // "/" would redirect a Spanish visitor straight back to "/es".
@@ -88,7 +94,11 @@ export const SignupClosed: Story = {
     signup: signup({ kind: 'closed', edition: { ...edition, signupStatus: 'closed' } }),
   },
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).queryByRole('link', { name: 'Apply as a judge' })).toBeNull();
+    const canvas = within(canvasElement);
+    await expect(canvas.queryByRole('link', { name: 'Accept the quest' })).toBeNull();
+    // No stage is marked current once signup is closed.
+    const stages = within(canvas.getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
+    for (const stage of stages) await expect(stage).not.toHaveAttribute('aria-current');
   },
 };
 

@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
 import { Button, ButtonLink } from '@/ui/Button';
 import { Avatar } from '@/ui/Avatar';
+import { Panel } from '@/ui/Panel';
 import type { Edition } from '@/judge-signup/api/types';
 import { LOCALES } from '@/i18n/locales';
 
@@ -27,6 +28,14 @@ function Trophy() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6 fill-gold-400">
       <path d="M18 3V2H6v1H2v3a5 5 0 0 0 4.6 5A6 6 0 0 0 11 14.9V18H8v3h8v-3h-3v-3.1A6 6 0 0 0 17.4 11 5 5 0 0 0 22 6V3h-4ZM4 6V5h2v3.8A3 3 0 0 1 4 6Zm16 0a3 3 0 0 1-2 2.8V5h2v1Z" />
+    </svg>
+  );
+}
+
+function Lock() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3 w-3 fill-current">
+      <path d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Z" />
     </svg>
   );
 }
@@ -68,7 +77,7 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
       </div>
 
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <span className="group flex items-center gap-2 font-bold tracking-tight">
+        <span className="group flex items-center gap-2 font-display font-bold tracking-wider uppercase">
           <span className="inline-flex group-hover:animate-wiggle">
             <Trophy />
           </span>
@@ -76,24 +85,24 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
         </span>
         <div className="flex items-center gap-2">
           {account && (
-            <div className="flex animate-swap items-center gap-2 rounded-full border border-ink-700 bg-ink-900 p-1">
+            <div className="chamfer flex animate-swap items-center gap-2 bg-ink-800/80 p-1 pl-1.5 [--cut:8px]">
               <Avatar name={account.user.displayName} src={account.user.avatarUrl} size={28} />
-              <span className="hidden max-w-32 truncate text-sm text-ink-200 sm:inline">{account.user.displayName}</span>
-              <Button variant="ghost" className="rounded-full px-3 py-1 text-xs" onClick={account.onSignOut}>
+              <span className="hidden max-w-32 truncate font-display text-sm text-ink-200 sm:inline">{account.user.displayName}</span>
+              <Button variant="ghost" onClick={account.onSignOut}>
                 {t('signup.signOut')}
               </Button>
             </div>
           )}
-          <nav aria-label={t('nav.language')} className="relative text-sm">
+          <nav aria-label={t('nav.language')} className="relative font-display text-sm">
             {/* <details> keeps the menu usable without JavaScript and scales to any
                 number of community translations. */}
             <details className="group">
-              <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-1.5 text-ink-200 hover:bg-ink-800 hover:text-ink-50 [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-1.5 text-ink-200 hover:bg-ink-800 hover:text-ink-50 [&::-webkit-details-marker]:hidden">
                 <Globe />
                 <span>{LOCALES.find((l) => l.code === locale)?.name ?? locale}</span>
                 <span aria-hidden="true" className="text-xs transition-transform group-open:rotate-180">▾</span>
               </summary>
-              <ul className="absolute right-0 z-10 mt-2 min-w-40 origin-top-right animate-swap rounded-lg border border-ink-700 bg-ink-900 p-1 shadow-xl shadow-black/40">
+              <ul className="chamfer absolute right-0 z-10 mt-2 min-w-40 origin-top-right animate-swap border border-ink-700 bg-ink-900 p-1 [--cut:8px]">
                 {LOCALES.map(({ code, name }) => (
                   <li key={code}>
                     <a
@@ -103,7 +112,7 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
                       hrefLang={code}
                       lang={code}
                       aria-current={code === locale ? 'true' : undefined}
-                      className={`block rounded-md px-3 py-2 ${
+                      className={`block px-3 py-2 ${
                         code === locale ? 'bg-ink-800 text-ink-50' : 'text-ink-200 hover:bg-ink-800 hover:text-ink-50'
                       }`}
                     >
@@ -122,13 +131,13 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
           <div className="space-y-6">
             {edition && (
               <p
-                className="inline-flex animate-rise items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3 py-1 text-xs font-semibold tracking-wide text-gold-300 uppercase"
+                className="chamfer inline-flex animate-rise items-center gap-2 bg-gold-400/12 px-3 py-1.5 font-pixel text-[0.65rem] tracking-wider text-gold-300 uppercase [--cut:6px]"
                 style={stagger(0)}
               >
                 {signupOpen && (
                   <span aria-hidden="true" className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-400" />
+                    <span className="absolute inline-flex h-full w-full animate-ping bg-gold-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 bg-gold-400" />
                   </span>
                 )}
                 {signupOpen
@@ -137,18 +146,28 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
               </p>
             )}
             <h1
-              className="animate-rise bg-gradient-to-br from-ink-50 from-40% to-gold-300 bg-clip-text text-4xl leading-tight font-extrabold tracking-tight text-balance text-transparent sm:text-6xl"
+              className="animate-rise bg-gradient-to-br from-ink-50 from-40% to-gold-300 bg-clip-text font-display text-5xl leading-[1.02] font-bold tracking-tight text-balance text-transparent sm:text-7xl"
               style={stagger(1)}
             >
               {t('hero.title')}
             </h1>
-            <p className="max-w-xl animate-rise text-lg leading-8 text-ink-200" style={stagger(2)}>
-              {t('hero.subtitle')}
-            </p>
+            {/* The pitch reads like a game's dialog box, with its "next" indicator. */}
+            <Panel
+              tone="muted"
+              cut={12}
+              className="max-w-xl animate-rise"
+              innerClassName="relative bg-ink-900/90 px-5 py-4 pr-10"
+              style={stagger(2)}
+            >
+              <p className="text-base leading-7 text-ink-200 sm:text-lg sm:leading-8">{t('hero.subtitle')}</p>
+              <span aria-hidden="true" className="absolute right-4 bottom-3 animate-blink text-xs text-gold-400">
+                ▼
+              </span>
+            </Panel>
             {signupOpen && (
               <div className="flex animate-rise flex-wrap items-center gap-4" style={stagger(3)}>
                 <ButtonLink href="#judge-signup">{t('hero.cta')}</ButtonLink>
-                <span className="text-sm text-ink-400">{t('hero.deadline', { date: deadline ?? '' })}</span>
+                <span className="font-display text-sm text-ink-400">{t('hero.deadline', { date: deadline ?? '' })}</span>
               </div>
             )}
           </div>
@@ -159,33 +178,61 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
 
         <section className="relative border-t border-ink-800 bg-ink-900/50">
           <div className="mx-auto max-w-6xl px-6 py-16">
-            <h2 className="mb-10 text-2xl font-bold tracking-tight">{t('steps.title')}</h2>
-            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {STEPS.map((step, index) => (
-                <li
-                  key={step}
-                  className="group reveal-on-scroll rounded-xl border border-ink-800 bg-ink-900 p-5 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-1 hover:border-gold-400/40 hover:shadow-[0_12px_32px_-12px] hover:shadow-gold-400/25"
-                >
-                  <span className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-400/15 text-sm font-bold text-gold-400 transition-[transform,background-color,color] duration-200 ease-[var(--ease-spring)] group-hover:scale-110 group-hover:bg-gold-400 group-hover:text-ink-950">
-                    {index + 1}
-                  </span>
-                  <h3 className="mb-1 font-semibold">{t(`steps.${step}.title`)}</h3>
-                  <p className="text-sm leading-6 text-ink-400">{t(`steps.${step}.body`)}</p>
-                </li>
-              ))}
+            <h2 id="quest-log" className="mb-10 font-display text-3xl font-bold tracking-wide uppercase">
+              {t('steps.title')}
+            </h2>
+            <ol aria-labelledby="quest-log" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {STEPS.map((step, index) => {
+                // While signup is open the edition sits on stage 1; later stages are locked.
+                const current = signupOpen && index === 0;
+                const locked = signupOpen && index > 0;
+                return (
+                  <Panel
+                    as="li"
+                    key={step}
+                    tone={current ? 'active' : 'default'}
+                    aria-current={current ? 'step' : undefined}
+                    className={`group reveal-on-scroll transition-[transform,opacity] duration-200 hover:-translate-y-1 ${
+                      locked ? 'opacity-60 hover:opacity-100' : ''
+                    }`}
+                    innerClassName={`p-5 ${current ? 'bg-[linear-gradient(160deg,rgb(240_193_75/0.12),transparent_60%)] bg-ink-900' : ''}`}
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-3 font-pixel text-[0.6rem] tracking-wider uppercase">
+                      <span className="text-ink-400">{t('steps.stage', { number: String(index + 1).padStart(2, '0') })}</span>
+                      {current && (
+                        <span className="chamfer flex items-center gap-1.5 bg-gold-400 px-2 py-1 text-ink-950 [--cut:4px]">
+                          <span aria-hidden="true" className="animate-blink">
+                            ▶
+                          </span>
+                          {t('steps.current')}
+                        </span>
+                      )}
+                      {locked && (
+                        <span className="flex items-center gap-1.5 text-ink-400">
+                          <Lock />
+                          {t('steps.locked')}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="mb-1 font-display text-lg font-semibold">{t(`steps.${step}.title`)}</h3>
+                    <p className="text-sm leading-6 text-ink-400">{t(`steps.${step}.body`)}</p>
+                  </Panel>
+                );
+              })}
             </ol>
           </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-6 py-16">
-          <h2 className="mb-10 text-2xl font-bold tracking-tight">{t('principles.title')}</h2>
+          <h2 className="mb-10 font-display text-3xl font-bold tracking-wide uppercase">{t('principles.title')}</h2>
           <ul className="grid gap-6 md:grid-cols-3">
-            {PRINCIPLES.map((principle) => (
+            {PRINCIPLES.map((principle, index) => (
               <li
                 key={principle}
                 className="reveal-on-scroll border-l-2 border-gold-400/50 pl-4 transition-colors duration-200 hover:border-gold-300"
               >
-                <h3 className="mb-1 font-semibold">{t(`principles.${principle}.title`)}</h3>
+                <span className="mb-2 block font-pixel text-[0.6rem] text-gold-400">#{index + 1}</span>
+                <h3 className="mb-1 font-display text-lg font-semibold">{t(`principles.${principle}.title`)}</h3>
                 <p className="text-sm leading-6 text-ink-400">{t(`principles.${principle}.body`)}</p>
               </li>
             ))}
@@ -193,7 +240,7 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
         </section>
       </main>
 
-      <footer className="relative border-t border-ink-800 px-6 py-8 text-center text-sm text-ink-400">
+      <footer className="relative border-t border-ink-800 px-6 py-8 text-center font-pixel text-[0.65rem] tracking-wider text-ink-400 uppercase">
         {t('footer.openSource')}
       </footer>
     </div>

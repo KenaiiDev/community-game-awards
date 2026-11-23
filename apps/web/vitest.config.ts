@@ -38,11 +38,11 @@ export default defineConfig({
             expect: {
               toMatchScreenshot: {
                 comparatorName: 'pixelmatch',
-                // Zero tolerance: rendering is deterministic (regenerated references are
-                // byte-identical), and any tolerance lets changes slip through. pixelmatch
-                // also ignores per-pixel color differences below `threshold` (0.1 by
-                // default) and anti-aliased pixels, which hid subtle background changes.
-                comparatorOptions: { allowedMismatchedPixels: 0, threshold: 0, includeAA: true },
+                // Exact colors: pixelmatch's default `threshold` (0.1) and its anti-aliasing
+                // allowance hid a whole background redesign. Chromium does not always
+                // anti-alias the diagonal edges of cut corners identically (1-7 px, +/-5),
+                // so up to 16 pixels may differ; a one-word text change is hundreds.
+                comparatorOptions: { allowedMismatchedPixels: 16, threshold: 0, includeAA: true },
               },
             },
           },

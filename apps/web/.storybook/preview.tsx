@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/nextjs-vite';
 import { NextIntlClientProvider } from 'next-intl';
 import { DEFAULT_LOCALE, LOCALES } from '../src/i18n/locales';
 import { withFallback, type Messages } from '../src/i18n/fallback';
+import '../src/ui/fonts';
 import '../src/app/globals.css';
 
 // Every translation file, with the same English fallback the app uses, so a new

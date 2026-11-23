@@ -17,6 +17,18 @@ const user = {
 };
 const ready = { kind: 'ready', edition, user, consent: false, submitting: false } as const;
 
+/** The quest objectives, in order, with their state as announced to assistive tech. */
+function objectives(canvasElement: HTMLElement) {
+  const list = within(canvasElement).getByRole('list', { name: 'Objectives' });
+  return within(list)
+    .getAllByRole('listitem')
+    .map((item) => ({
+      text: item.textContent ?? '',
+      done: within(item).queryByText('Done') !== null,
+      current: item.getAttribute('aria-current') === 'step',
+    }));
+}
+
 const meta = {
   title: 'Judge signup/JudgeSignupCard',
   component: JudgeSignupCard,
@@ -58,6 +70,13 @@ export const Closed: Story = {
 export const SignedOut: Story = {
   args: { view: { kind: 'signed_out', edition } },
   play: async ({ canvasElement }) => {
+    // Applying is a quest: three objectives, the first one is next.
+    await expect(within(canvasElement).getByText('New quest')).toBeInTheDocument();
+    await expect(objectives(canvasElement)).toEqual([
+      expect.objectContaining({ done: false, current: true }),
+      expect.objectContaining({ done: false, current: false }),
+      expect.objectContaining({ done: false, current: false }),
+    ]);
     const link = within(canvasElement).getByRole('link', { name: 'Sign in with Discord' });
     await expect(link).toHaveAttribute('href', '/api/auth/discord');
   },
@@ -74,6 +93,11 @@ export const Ready: Story = {
   args: { view: ready },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
+    await expect(objectives(canvasElement)).toEqual([
+      expect.objectContaining({ text: expect.stringContaining('Sign in with Discord'), done: true, current: false }),
+      expect.objectContaining({ done: false, current: true }),
+      expect.objectContaining({ done: false, current: false }),
+    ]);
     await expect(canvas.getByRole('button', { name: 'Apply as a judge' })).toBeDisabled();
     await userEvent.click(canvas.getByRole('checkbox'));
     await expect(args.onConsentChange).toHaveBeenCalledWith(true);
@@ -86,6 +110,11 @@ export const Ready: Story = {
 export const ReadyWithConsent: Story = {
   args: { view: { ...ready, consent: true } },
   play: async ({ canvasElement, args }) => {
+    await expect(objectives(canvasElement).map((o) => [o.done, o.current])).toEqual([
+      [true, false],
+      [true, false],
+      [false, true],
+    ]);
     const submit = within(canvasElement).getByRole('button', { name: 'Apply as a judge' });
     await expect(submit).toBeEnabled();
     await userEvent.click(submit);
@@ -119,6 +148,7 @@ export const Applied: Story = {
     },
   },
   play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByText('Achievement unlocked')).toBeInTheDocument();
     // Applying is celebrated with a burst of confetti. It is decorative only, and
     // with reduced motion it never shows up (tests always run with reduced motion).
     const celebration = within(canvasElement).getByTestId('celebration');

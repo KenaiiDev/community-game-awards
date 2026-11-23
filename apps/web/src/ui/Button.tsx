@@ -2,16 +2,17 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
 
 type Variant = 'primary' | 'discord' | 'ghost';
 
-// Every button answers the pointer: it lifts on hover and sinks when pressed.
+// Game-menu buttons: cut corners, a "▶" cursor that slides in on hover and focus,
+// a lift on hover and a press when clicked. The focus outline is drawn inside the
+// button because clip-path would cut an outer one.
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-[transform,background-color,box-shadow,color] duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:active:scale-100 disabled:shadow-none';
+  'chamfer relative inline-flex items-center justify-center gap-2 font-display font-semibold tracking-wider uppercase transition-[transform,background-color,color,filter] duration-150 ease-out active:scale-[0.97] focus-visible:outline-2 focus-visible:-outline-offset-4 before:absolute before:left-2.5 before:-translate-x-1 before:text-[0.55rem] before:opacity-0 before:transition before:duration-150 before:content-["▶"] hover:before:translate-x-0 hover:before:opacity-100 focus-visible:before:translate-x-0 focus-visible:before:opacity-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:active:scale-100 disabled:before:hidden';
 
 const variants: Record<Variant, string> = {
-  primary:
-    'bg-gold-400 text-ink-950 shadow-[0_6px_20px_-8px] shadow-gold-400/60 hover:bg-gold-300 hover:shadow-[0_10px_28px_-8px] hover:shadow-gold-400/70 focus-visible:outline-gold-300',
-  discord:
-    'bg-discord text-white shadow-[0_6px_20px_-8px] shadow-discord/60 hover:bg-discord-hover hover:shadow-[0_10px_28px_-8px] hover:shadow-discord/70 focus-visible:outline-discord',
-  ghost: 'px-3 py-2 text-ink-200 hover:translate-y-0 hover:text-ink-50 hover:bg-ink-800 focus-visible:outline-ink-400',
+  primary: '[--cut:10px] hover:-translate-y-0.5 active:translate-y-0 px-7 py-3 text-sm bg-gold-400 text-ink-950 hover:bg-gold-300 focus-visible:outline-ink-950',
+  discord: '[--cut:10px] hover:-translate-y-0.5 active:translate-y-0 px-7 py-3 text-sm bg-discord text-white hover:bg-discord-hover focus-visible:outline-white',
+  ghost:
+    '[--cut:6px] px-3 py-2 text-xs text-ink-200 before:hidden hover:bg-ink-800 hover:text-ink-50 focus-visible:outline-ink-400',
 };
 
 export function buttonClass(variant: Variant = 'primary', className = '') {

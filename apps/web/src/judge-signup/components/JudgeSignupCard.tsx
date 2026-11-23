@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
 import { Avatar } from '@/ui/Avatar';
 import { Button, ButtonLink } from '@/ui/Button';
+import { Panel } from '@/ui/Panel';
 import type { SignupView } from '../state/judge-signup.store';
 
 const KNOWN_ERRORS = [
@@ -82,10 +83,59 @@ function CheckIcon() {
 function Identity({ user }: { user: { displayName: string; avatarUrl: string | null } }) {
   const t = useTranslations('signup');
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-ink-800 px-4 py-3 text-left">
+    <div className="flex items-center gap-3 bg-ink-800/70 px-4 py-3 text-left">
       <Avatar name={user.displayName} src={user.avatarUrl} />
       <span className="truncate text-sm text-ink-200">{t('signedInAs', { name: user.displayName })}</span>
     </div>
+  );
+}
+
+const OBJECTIVES = ['signIn', 'consent', 'submit'] as const;
+
+/** Which quest objective is next, or null when the view is not part of the quest. */
+function questProgress(view: SignupView): number | null {
+  if (view.kind === 'signed_out') return 0;
+  if (view.kind === 'ready') return view.consent ? 2 : 1;
+  return null;
+}
+
+function Objectives({ next }: { next: number }) {
+  const t = useTranslations('signup.objectives');
+  return (
+    <ol aria-label={t('title')} className="space-y-2.5 border-y border-dashed border-ink-700 py-4">
+      {OBJECTIVES.map((objective, index) => {
+        const done = index < next;
+        const current = index === next;
+        return (
+          <li
+            key={objective}
+            aria-current={current ? 'step' : undefined}
+            className={`flex items-center gap-3 font-display text-sm font-medium transition-colors duration-200 ${
+              current ? 'text-ink-50' : 'text-ink-400'
+            }`}
+          >
+            <span
+              aria-hidden="true"
+              className={`chamfer flex h-5 w-5 shrink-0 items-center justify-center text-[0.55rem] [--cut:4px] ${
+                done ? 'animate-pop bg-gold-400 text-ink-950' : current ? 'bg-gold-400/20 text-gold-300' : 'bg-ink-800'
+              }`}
+            >
+              {done ? '✓' : current ? <span className="animate-blink">▶</span> : null}
+            </span>
+            <span className={done ? 'line-through decoration-ink-700' : undefined}>{t(objective)}</span>
+            {done && <span className="ml-auto font-pixel text-[0.6rem] text-gold-400 uppercase">{t('done')}</span>}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function Trophy({ className = '' }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className={`fill-current ${className}`}>
+      <path d="M18 3V2H6v1H2v3a5 5 0 0 0 4.6 5A6 6 0 0 0 11 14.9V18H8v3h8v-3h-3v-3.1A6 6 0 0 0 17.4 11 5 5 0 0 0 22 6V3h-4ZM4 6V5h2v3.8A3 3 0 0 1 4 6Zm16 0a3 3 0 0 1-2 2.8V5h2v1Z" />
+    </svg>
   );
 }
 
@@ -96,7 +146,7 @@ function Notice({ tone, children }: { tone: 'info' | 'danger' | 'success'; child
     success: 'border-success/40 bg-success/10 text-success',
   };
   return (
-    <p role={tone === 'danger' ? 'alert' : undefined} className={`rounded-lg border px-4 py-3 text-sm ${tones[tone]}`}>
+    <p role={tone === 'danger' ? 'alert' : undefined} className={`border-l-2 px-4 py-3 text-sm ${tones[tone]}`}>
       {children}
     </p>
   );
@@ -132,12 +182,12 @@ export function JudgeSignupCard({
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className="h-2 w-2 animate-bounce rounded-full bg-gold-400"
+                className="h-2 w-2 animate-bounce bg-gold-400"
                 style={{ animationDelay: `${i * 120}ms` }}
               />
             ))}
           </span>
-          {t('loading')}
+          <span className="font-pixel text-xs uppercase">{t('loading')}</span>
         </p>
       );
       break;
@@ -193,7 +243,7 @@ export function JudgeSignupCard({
         >
           <Identity user={view.user} />
           <label
-            className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 text-sm leading-6 transition-colors duration-200 ${
+            className={`flex cursor-pointer items-start gap-3 border p-4 text-sm leading-6 transition-colors duration-200 ${
               view.consent ? 'border-gold-400/60 bg-gold-400/10 text-ink-50' : 'border-ink-700 text-ink-200 hover:border-ink-400'
             }`}
           >
@@ -203,7 +253,7 @@ export function JudgeSignupCard({
                 checked={view.consent}
                 disabled={view.submitting}
                 onChange={(event) => onConsentChange(event.target.checked)}
-                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-ink-400 transition-[background-color,border-color,transform] duration-150 checked:border-gold-400 checked:bg-gold-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300 active:scale-90 disabled:cursor-not-allowed"
+                className="peer h-5 w-5 cursor-pointer appearance-none border-2 border-ink-400 transition-[background-color,border-color,transform] duration-150 checked:border-gold-400 checked:bg-gold-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300 active:scale-90 disabled:cursor-not-allowed"
               />
               <CheckIcon />
             </span>
@@ -222,11 +272,15 @@ export function JudgeSignupCard({
       body = (
         <div className="relative space-y-4 text-center">
           <Celebration />
+          <p className="chamfer mx-auto inline-flex animate-pop items-center gap-2 bg-[linear-gradient(110deg,var(--color-gold-400)_40%,var(--color-gold-300)_50%,var(--color-gold-400)_60%)] bg-[length:250%_100%] px-4 py-2 font-pixel text-[0.7rem] text-ink-950 uppercase [--cut:8px] motion-safe:animate-shine">
+            <Trophy className="h-4 w-4" />
+            {t('achievement')}
+          </p>
           <div className="flex flex-col items-center gap-3">
             <span className="animate-pop rounded-full p-1 ring-2 ring-gold-400 ring-offset-4 ring-offset-ink-900">
               <Avatar name={view.user.displayName} src={view.user.avatarUrl} size={64} />
             </span>
-            <h3 className="animate-rise text-xl font-bold text-gold-300" style={{ '--i': 2 } as CSSProperties}>
+            <h3 className="animate-rise font-display text-2xl font-bold text-gold-300" style={{ '--i': 2 } as CSSProperties}>
               {t('appliedTitle')}
             </h3>
           </div>
@@ -238,23 +292,38 @@ export function JudgeSignupCard({
       break;
   }
 
+  const progress = questProgress(view);
+
   return (
-    <section
+    <Panel
+      as="section"
       data-testid="judge-signup-card"
       aria-labelledby="judge-signup-title"
-      className="relative rounded-2xl border border-ink-700 bg-ink-900 p-6 shadow-2xl shadow-black/40 sm:p-8"
+      cut={20}
+      className="drop-shadow-[0_24px_48px_rgb(0_0_0/0.5)]"
+      innerClassName="p-6 sm:p-8"
     >
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-gold-400/70 to-transparent"
-      />
-      <h2 id="judge-signup-title" className="mb-5 text-xl font-bold tracking-tight">
+      {progress !== null && (
+        <p className="mb-2 flex items-center gap-2 font-pixel text-[0.65rem] tracking-widest text-gold-400 uppercase">
+          <span aria-hidden="true" className="animate-blink">
+            ◆
+          </span>
+          {t('questLabel')}
+        </p>
+      )}
+      <h2 id="judge-signup-title" className="font-display text-2xl font-bold tracking-wide uppercase">
         {t('title')}
       </h2>
+      {progress !== null && (
+        <>
+          <p className="mt-1 mb-5 text-sm text-gold-300/80">{t('reward')}</p>
+          <Objectives next={progress} />
+        </>
+      )}
       {/* Keyed by state, so every step of the flow transitions in instead of jumping. */}
-      <div key={view.kind} className="animate-swap">
+      <div key={view.kind} className="mt-5 animate-swap">
         {body}
       </div>
-    </section>
+    </Panel>
   );
 }

@@ -16,6 +16,8 @@ afterEach(async (context) => {
   if (context.task.result?.state === 'fail') return;
   const storyId = (context.task.meta as { storyId?: string }).storyId ?? '';
   const width = storyId.endsWith('-mobile') ? MOBILE_WIDTH : DESKTOP_WIDTH;
+  // Web fonts load asynchronously; capture only once they are in use.
+  await document.fonts.ready;
   try {
     // Set the width first, then grow the frame to the content height so the
     // whole story (not only the first screen) is part of the reference.

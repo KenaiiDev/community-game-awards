@@ -10,11 +10,11 @@
     "eyebrowClosed": "{edition}",
     "title": "Premios de videojuegos decididos por los jugadores, a la vista de todos",
     "subtitle": "Los jueces se sortean entre la comunidad. Todas las nominaciones son públicas, todas las reglas se publican antes de que empiece la edición y nadie decide a puertas cerradas.",
-    "cta": "Postularme como juez",
+    "cta": "Aceptar la misión",
     "deadline": "La inscripción cierra el {date}"
   },
   "steps": {
-    "title": "Cómo funciona una edición",
+    "title": "Registro de misiones",
     "signup": {
       "title": "Inscripción de jueces",
       "body": "Cualquier persona con una cuenta de Discord puede postularse antes de la fecha límite."
@@ -38,10 +38,13 @@
     "reveal": {
       "title": "Ganadores",
       "body": "Los resultados se publican junto con el registro completo y auditable de votos."
-    }
+    },
+    "stage": "Etapa {number}",
+    "current": "Estás aquí",
+    "locked": "Bloqueada"
   },
   "principles": {
-    "title": "Primero las reglas, después los resultados",
+    "title": "Reglas del juego",
     "transparent": {
       "title": "Transparente",
       "body": "Los jueces, las nominaciones y las reglas de desempate son públicos."
@@ -84,7 +87,17 @@
       "unknown": "Algo salió mal. Vuelve a intentarlo."
     },
     "appliedTitle": "Ya estás en el sorteo",
-    "appliedBody": "Recibimos tu postulación para {edition} el {date}. Los jueces seleccionados se anunciarán cuando cierre la inscripción."
+    "appliedBody": "Recibimos tu postulación para {edition} el {date}. Los jueces seleccionados se anunciarán cuando cierre la inscripción.",
+    "questLabel": "Nueva misión",
+    "reward": "Recompensa: ayudar a decidir los premios del año",
+    "objectives": {
+      "title": "Objetivos",
+      "signIn": "Iniciar sesión con Discord",
+      "consent": "Aceptar juzgar en público",
+      "submit": "Enviar tu postulación",
+      "done": "Completado"
+    },
+    "achievement": "Logro desbloqueado"
   },
   "footer": {
     "openSource": "Código abierto, gestionado por la comunidad."
