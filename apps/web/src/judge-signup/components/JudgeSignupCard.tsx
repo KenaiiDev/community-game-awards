@@ -31,7 +31,7 @@ function DiscordMark() {
   );
 }
 
-const CONFETTI_COLORS = ['bg-gold-300', 'bg-gold-500', 'bg-discord', 'bg-success', 'bg-ink-50'];
+const CONFETTI_COLORS = ['bg-gold-300', 'bg-lime-400', 'bg-discord', 'bg-gold-500', 'bg-ink-50'];
 
 // A deterministic burst: pieces fan out evenly around the avatar, so every render
 // (and every screenshot) is identical.
@@ -106,13 +106,13 @@ function Objectives({ next }: { next: number }) {
             <span
               aria-hidden="true"
               className={`chamfer flex h-5 w-5 shrink-0 items-center justify-center text-[0.55rem] [--cut:4px] ${
-                done ? 'animate-pop bg-gold-400 text-ink-950' : current ? 'bg-gold-400/20 text-gold-300' : 'bg-ink-800'
+                done ? 'animate-pop bg-lime-400 text-ink-950' : current ? 'bg-lime-400/20 text-lime-300' : 'bg-ink-800'
               }`}
             >
               {done ? '✓' : current ? <span className="animate-blink">▶</span> : null}
             </span>
             <span className={done ? 'line-through decoration-ink-700' : undefined}>{t(objective)}</span>
-            {done && <span className="ml-auto font-pixel text-[0.6rem] text-gold-400 uppercase">{t('done')}</span>}
+            {done && <span className="ml-auto font-pixel text-[0.6rem] text-lime-400 uppercase">{t('done')}</span>}
           </li>
         );
       })}
@@ -171,7 +171,7 @@ export function JudgeSignupCard({
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className="h-2 w-2 animate-bounce bg-gold-400"
+                className="h-2 w-2 animate-bounce bg-lime-400"
                 style={{ animationDelay: `${i * 120}ms` }}
               />
             ))}
@@ -232,7 +232,7 @@ export function JudgeSignupCard({
         >
           <label
             className={`flex cursor-pointer items-start gap-3 border p-4 text-sm leading-6 transition-colors duration-200 ${
-              view.consent ? 'border-gold-400/60 bg-gold-400/10 text-ink-50' : 'border-ink-700 text-ink-200 hover:border-ink-400'
+              view.consent ? 'border-lime-400/60 bg-lime-400/10 text-ink-50' : 'border-ink-700 text-ink-200 hover:border-ink-400'
             }`}
           >
             <span className="relative mt-0.5 flex shrink-0">
@@ -241,7 +241,7 @@ export function JudgeSignupCard({
                 checked={view.consent}
                 disabled={view.submitting}
                 onChange={(event) => onConsentChange(event.target.checked)}
-                className="peer h-5 w-5 cursor-pointer appearance-none border-2 border-ink-400 transition-[background-color,border-color,transform] duration-150 checked:border-gold-400 checked:bg-gold-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300 active:scale-90 disabled:cursor-not-allowed"
+                className="peer h-5 w-5 cursor-pointer appearance-none border-2 border-ink-400 transition-[background-color,border-color,transform] duration-150 checked:border-lime-400 checked:bg-lime-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300 active:scale-90 disabled:cursor-not-allowed"
               />
               <CheckIcon />
             </span>
@@ -292,7 +292,7 @@ export function JudgeSignupCard({
       innerClassName="p-6 sm:p-8"
     >
       {progress !== null && (
-        <p className="mb-2 flex items-center gap-2 font-pixel text-[0.65rem] tracking-widest text-gold-400 uppercase">
+        <p className="mb-2 flex items-center gap-2 font-pixel text-[0.65rem] tracking-widest text-lime-400 uppercase">
           <span aria-hidden="true" className="animate-blink">
             ◆
           </span>

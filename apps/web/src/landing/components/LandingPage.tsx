@@ -57,7 +57,7 @@ function Countdown({ closesAt }: { closesAt: string }) {
       title={t('countdownLabel')}
       className="chamfer flex items-center gap-2 bg-ink-800/80 px-3 py-1.5 font-pixel text-[0.65rem] tracking-wider text-ink-200 uppercase [--cut:6px]"
     >
-      <span aria-hidden="true" className="animate-blink text-gold-400">
+      <span aria-hidden="true" className="animate-blink text-lime-400">
         ⏱
       </span>
       {/* Server and browser clocks differ by the render time. */}
@@ -100,9 +100,9 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
       {/* Stage lighting that drifts slowly behind the whole app: two warm glows,
           a cool one and a faint dot grid. */}
       <div data-testid="ambient" aria-hidden="true" className="pointer-events-none fixed inset-0">
-        <div className="absolute -top-48 left-1/2 -ml-[30rem] h-[36rem] w-[60rem] animate-drift-a rounded-full bg-[radial-gradient(closest-side,rgb(240_193_75/0.16),transparent)]" />
-        <div className="absolute -top-24 -right-40 h-[30rem] w-[30rem] animate-drift-b rounded-full bg-[radial-gradient(closest-side,rgb(88_101_242/0.16),transparent)]" />
-        <div className="absolute top-1/2 -left-48 h-[32rem] w-[32rem] animate-drift-c rounded-full bg-[radial-gradient(closest-side,rgb(240_193_75/0.08),transparent)]" />
+        <div className="absolute -top-48 left-1/2 -ml-[30rem] h-[36rem] w-[60rem] animate-drift-a rounded-full bg-[radial-gradient(closest-side,rgb(124_77_255/0.22),transparent)]" />
+        <div className="absolute -top-24 -right-40 h-[30rem] w-[30rem] animate-drift-b rounded-full bg-[radial-gradient(closest-side,rgb(198_244_50/0.07),transparent)]" />
+        <div className="absolute top-1/2 -left-48 h-[32rem] w-[32rem] animate-drift-c rounded-full bg-[radial-gradient(closest-side,rgb(246_199_68/0.07),transparent)]" />
         <div className="absolute inset-0 animate-pan bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_top,black,transparent_75%)] bg-[size:24px_24px]" />
       </div>
 
@@ -117,11 +117,11 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
           </span>
         <div className="order-3 flex w-full flex-wrap items-center gap-2 sm:order-2 sm:w-auto">
           {edition && (
-            <span className="chamfer flex items-center gap-2 bg-gold-400/12 px-3 py-1.5 font-pixel text-[0.65rem] tracking-wider text-gold-300 uppercase [--cut:6px]">
+            <span className="chamfer flex items-center gap-2 bg-lime-400/12 px-3 py-1.5 font-pixel text-[0.65rem] tracking-wider text-lime-300 uppercase [--cut:6px]">
               {signupOpen && (
                 <span aria-hidden="true" className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping bg-gold-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 bg-gold-400" />
+                  <span className="absolute inline-flex h-full w-full animate-ping bg-lime-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 bg-lime-400" />
                 </span>
               )}
               {signupOpen
@@ -179,16 +179,16 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
                     tabIndex={selected ? 0 : -1}
                     onClick={() => select(entry)}
                     style={stagger(index + 1)}
-                    className={`group chamfer relative flex shrink-0 animate-rise items-center gap-3 py-1.5 pr-3 pl-2 text-left font-display text-base font-bold tracking-wider whitespace-nowrap uppercase transition-[color,background-color,padding] duration-150 [--cut:8px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-gold-300 lg:py-2 lg:pr-4 lg:text-2xl ${
+                    className={`group chamfer relative flex shrink-0 animate-rise items-center gap-3 py-1.5 pr-3 pl-2 text-left font-display text-base font-bold tracking-wider whitespace-nowrap uppercase transition-[color,background-color,padding] duration-150 [--cut:8px] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-lime-300 lg:py-2 lg:pr-4 lg:text-2xl ${
                       selected
-                        ? 'bg-gold-400/12 text-gold-300 lg:pl-4'
+                        ? 'bg-lime-400/12 text-lime-300 lg:pl-4'
                         : 'text-ink-400 hover:bg-ink-800/60 hover:text-ink-50 lg:pl-3 lg:hover:pl-4'
                     }`}
                   >
                     <span
                       aria-hidden="true"
                       className={`text-[0.6em] transition-opacity duration-150 ${
-                        selected ? 'animate-blink text-gold-400' : 'opacity-0 group-hover:opacity-60'
+                        selected ? 'animate-blink text-lime-400' : 'opacity-0 group-hover:opacity-60'
                       }`}
                     >
                       ▶
@@ -232,7 +232,7 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
                         aria-current={current ? 'step' : undefined}
                         style={stagger(index)}
                         className={`chamfer animate-rise px-4 py-3 [--cut:8px] ${
-                          current ? 'bg-gold-400/12' : locked ? 'bg-ink-800/40 opacity-70' : 'bg-ink-800/40'
+                          current ? 'bg-gold-400/12' : 'bg-ink-800/40'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3 font-pixel text-[0.6rem] tracking-wider uppercase">
@@ -268,8 +268,8 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
                 <h2 className="mb-5 font-display text-2xl font-bold tracking-wide uppercase">{t('principles.title')}</h2>
                 <ul className="space-y-5">
                   {PRINCIPLES.map((principle, index) => (
-                    <li key={principle} style={stagger(index)} className="animate-rise border-l-2 border-gold-400/50 pl-4">
-                      <span className="mb-1 block font-pixel text-[0.6rem] text-gold-400">#{index + 1}</span>
+                    <li key={principle} style={stagger(index)} className="animate-rise border-l-2 border-lime-400/40 pl-4">
+                      <span className="mb-1 block font-pixel text-[0.6rem] text-lime-400">#{index + 1}</span>
                       <h3 className="mb-1 font-display text-lg font-semibold">{t(`principles.${principle}.title`)}</h3>
                       <p className="text-sm leading-6 text-ink-400">{t(`principles.${principle}.body`)}</p>
                     </li>
@@ -294,12 +294,12 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
                           lang={code}
                           aria-current={current ? 'true' : undefined}
                           className={`group chamfer flex items-center gap-3 px-4 py-3 font-display text-lg font-semibold [--cut:8px] ${
-                            current ? 'bg-gold-400/12 text-gold-300' : 'text-ink-200 hover:bg-ink-800/60 hover:text-ink-50'
+                            current ? 'bg-lime-400/12 text-lime-300' : 'text-ink-200 hover:bg-ink-800/60 hover:text-ink-50'
                           }`}
                         >
                           <span
                             aria-hidden="true"
-                            className={`text-xs ${current ? 'text-gold-400' : 'opacity-0 group-hover:opacity-60'}`}
+                            className={`text-xs ${current ? 'text-lime-400' : 'opacity-0 group-hover:opacity-60'}`}
                           >
                             ▶
                           </span>
@@ -318,14 +318,14 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
       {/* Dialog bar: the pitch, read like a game's dialog box. */}
       <footer className="relative border-t border-ink-800/80 bg-ink-950/60 px-4 py-3 sm:px-6">
         <div className="mx-auto flex max-w-6xl items-center gap-4">
-          <span aria-hidden="true" className="shrink-0 text-xs text-gold-400">
+          <span aria-hidden="true" className="shrink-0 text-xs text-lime-400">
             ◆
           </span>
           <p className="flex-1 text-sm leading-6 text-ink-200">{t('hero.subtitle')}</p>
           <span className="hidden shrink-0 font-pixel text-[0.6rem] tracking-wider text-ink-400 uppercase md:block">
             {t('footer.openSource')}
           </span>
-          <span aria-hidden="true" className="shrink-0 animate-blink text-xs text-gold-400">
+          <span aria-hidden="true" className="shrink-0 animate-blink text-xs text-lime-400">
             ▼
           </span>
         </div>
