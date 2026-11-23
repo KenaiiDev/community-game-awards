@@ -30,10 +30,10 @@ const edition = {
   signupClosesAt: new Date('2026-12-31T00:00:00Z'),
 };
 
-async function createApp() {
+async function createApp(overrides: Partial<AppConfig> = {}) {
   let now = new Date('2026-11-25T12:00:00Z');
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-    .overrideProvider(APP_CONFIG).useValue(config)
+    .overrideProvider(APP_CONFIG).useValue({ ...config, ...overrides })
     .overrideProvider(DISCORD_OAUTH).useValue(new FakeDiscordOAuth({ 'good-code': { id: '111', username: 'kenaii', globalName: 'Kenaii', avatar: null } }))
     .overrideProvider(USER_REPOSITORY).useValue(new InMemoryUserRepository())
     .overrideProvider(EDITION_REPOSITORY).useValue(new InMemoryEditionRepository([edition]))
@@ -87,6 +87,13 @@ describe('Account deletion (e2e)', () => {
     await request(server).get('/internal/purge-deleted-accounts').set('Authorization', 'Bearer wrong').expect(401);
   });
 
+  it('keeps the purge disabled when no CRON_SECRET is configured, whatever is sent', async () => {
+    ({ app } = await createApp({ cronSecret: null }));
+    const server = app.getHttpServer();
+    await request(server).get('/internal/purge-deleted-accounts').set('Authorization', 'Bearer ').expect(401);
+    await request(server).get('/internal/purge-deleted-accounts').set('Authorization', 'Bearer null').expect(401);
+  });
+
   it('deletes the account and its application once the grace period is over', async () => {
     let advance: (ms: number) => Date;
     ({ app, advance } = await createApp());
@@ -107,5 +114,7 @@ describe('Account deletion (e2e)', () => {
     await request(server).get('/me').set('Cookie', session).expect(401);
     const apply = await request(server).post('/judge-applications').set('Cookie', session).send({ consent: true }).expect(401);
     expect(apply.body.code).toBe('unauthenticated');
+    const again = await request(server).post('/me/deletion').set('Cookie', session).expect(401);
+    expect(again.body.code).toBe('unauthenticated');
   });
 });

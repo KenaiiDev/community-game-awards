@@ -21,7 +21,7 @@ describe('account deletion', () => {
   it('schedules deletion a week after the request', async () => {
     const { users, user, clock } = await setup();
 
-    const { scheduledFor } = await new RequestAccountDeletion(users, clock).execute({ userId: user.id });
+    const { scheduledFor } = (await new RequestAccountDeletion(users, clock).execute({ userId: user.id }))!;
 
     expect(scheduledFor).toEqual(new Date('2026-12-02T12:00:00Z'));
     expect((await users.findById(user.id))?.deletionRequestedAt).toEqual(clock.now());
@@ -32,9 +32,14 @@ describe('account deletion', () => {
     await new RequestAccountDeletion(users, clock).execute({ userId: user.id });
     advance(3 * DAY);
 
-    const { scheduledFor } = await new RequestAccountDeletion(users, clock).execute({ userId: user.id });
+    const { scheduledFor } = (await new RequestAccountDeletion(users, clock).execute({ userId: user.id }))!;
 
     expect(scheduledFor).toEqual(new Date('2026-12-02T12:00:00Z'));
+  });
+
+  it('reports a missing account instead of failing when the user no longer exists', async () => {
+    const { users, clock } = await setup();
+    await expect(new RequestAccountDeletion(users, clock).execute({ userId: 'gone' })).resolves.toBeNull();
   });
 
   it('cancels a pending deletion', async () => {

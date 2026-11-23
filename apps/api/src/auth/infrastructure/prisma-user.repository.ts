@@ -33,11 +33,12 @@ export class PrismaUserRepository implements UserRepository {
     });
   }
 
-  async requestDeletion(id: string, at: Date): Promise<Date> {
-    // Only sets the flag when it is not set yet, so the first request wins.
+  async requestDeletion(id: string, at: Date): Promise<Date | null> {
+    // Only sets the flag when it is not set yet, so the first request wins. A user
+    // purged in between simply reads back as missing.
     await this.prisma.user.updateMany({ where: { id, deletionRequestedAt: null }, data: { deletionRequestedAt: at } });
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { id }, select: { deletionRequestedAt: true } });
-    return user.deletionRequestedAt!;
+    const user = await this.prisma.user.findUnique({ where: { id }, select: { deletionRequestedAt: true } });
+    return user?.deletionRequestedAt ?? null;
   }
 
   async cancelDeletion(id: string): Promise<void> {

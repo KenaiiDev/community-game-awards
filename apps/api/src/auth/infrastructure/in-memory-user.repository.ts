@@ -28,7 +28,7 @@ export class InMemoryUserRepository implements UserRepository {
 
   async requestDeletion(id: string, at: Date) {
     const user = this.users.find((u) => u.id === id);
-    if (!user) throw new Error(`Unknown user ${id}`);
+    if (!user) return null;
     user.deletionRequestedAt ??= at;
     return user.deletionRequestedAt;
   }

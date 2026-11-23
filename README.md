@@ -36,7 +36,7 @@ Open http://localhost:3000 (English) or http://localhost:3000/es (Spanish).
 | `WEB_URL` | `http://localhost:3000` | Public origin of the web app; OAuth redirects back here. |
 | `SESSION_SECRET` | 32+ random characters | Signs the session cookie. `openssl rand -base64 48` |
 | `COOKIE_SECURE` | `false` | `true` (default) in production; `false` only for local http. |
-| `TRUST_PROXY` | `true` | Read the client IP from `X-Forwarded-For`. `true` on Vercel; default `false`. |
+| `TRUST_PROXY` | `true` | Read the client IP from `X-Forwarded-For`. `true` on Vercel, which overwrites that header; keep `false` (default) on hosts that pass it through, or clients could spoof their IP. |
 | `PROXY_SECRET` | 32+ random characters | Optional. Shared with the web app, which forwards the visitor's IP for rate limiting. Without it every visitor behind the web proxy shares one limit. |
 | `CRON_SECRET` | 32+ random characters | Optional. Protects the daily purge of deleted accounts (`GET /internal/purge-deleted-accounts`). Unset disables the endpoint. |
 | `DIRECT_URL` | | Optional. Non-pooled connection used by migrations (Neon). Defaults to `DATABASE_URL`. |

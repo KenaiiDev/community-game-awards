@@ -9,10 +9,11 @@ export class RequestAccountDeletion {
     private readonly clock: Clock,
   ) {}
 
-  async execute({ userId }: { userId: string }): Promise<{ scheduledFor: Date }> {
+  /** Resolves null when the account no longer exists. */
+  async execute({ userId }: { userId: string }): Promise<{ scheduledFor: Date } | null> {
     // Asking again keeps the first request, so the date never moves further away.
     const requestedAt = await this.users.requestDeletion(userId, this.clock.now());
-    return { scheduledFor: deletionScheduledFor(requestedAt) };
+    return requestedAt && { scheduledFor: deletionScheduledFor(requestedAt) };
   }
 }
 

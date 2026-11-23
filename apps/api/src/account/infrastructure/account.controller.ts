@@ -32,9 +32,10 @@ export class AccountController {
   @UseGuards(SessionGuard)
   @Throttle({ default: RATE_LIMITS.write })
   async requestDeletion(@Req() req: AuthenticatedRequest) {
-    if (!(await this.users.findById(req.userId))) throw new UnauthorizedException({ code: 'unauthenticated' });
-    const { scheduledFor } = await new RequestAccountDeletion(this.users, this.clock).execute({ userId: req.userId });
-    return { scheduledFor: scheduledFor.toISOString() };
+    const result = await new RequestAccountDeletion(this.users, this.clock).execute({ userId: req.userId });
+    // A valid token can outlive its account (purged after the grace period).
+    if (!result) throw new UnauthorizedException({ code: 'unauthenticated' });
+    return { scheduledFor: result.scheduledFor.toISOString() };
   }
 
   @Delete('me/deletion')
