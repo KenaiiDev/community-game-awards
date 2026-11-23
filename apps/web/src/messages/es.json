@@ -113,6 +113,7 @@
     "quest": "Misión",
     "log": "Registro de misiones",
     "rules": "Reglas",
+    "account": "Cuenta",
     "language": "Idioma",
     "hint": "↑ ↓ para navegar"
   },
@@ -125,5 +126,22 @@
     "title": "Este nivel no existe",
     "body": "La página que buscas no está aquí. Puede que se haya movido o que el enlace sea incorrecto.",
     "back": "Volver al menú principal"
+  },
+  "account": {
+    "title": "Tu cuenta",
+    "signedInAs": "Sesión iniciada con Discord como {name}",
+    "dataTitle": "Tus datos",
+    "dataBody": "Guardamos tu nombre de usuario, nombre visible y avatar de Discord, y tus postulaciones como juez. Nada más.",
+    "delete": "Borrar mis datos",
+    "deletePrompt": "Tu cuenta y todas tus postulaciones se borrarán el {date}, dentro de una semana. Puedes cancelarlo hasta entonces.",
+    "deleteYes": "Sí, borrar mis datos",
+    "deleteKeep": "Mantener mi cuenta",
+    "pending": "Tus datos se borrarán el {date}.",
+    "pendingBody": "¿Cambiaste de opinión? Puedes cancelarlo hasta entonces.",
+    "cancel": "Cancelar el borrado",
+    "error": {
+      "rate_limited": "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
+      "unknown": "Algo salió mal. Vuelve a intentarlo."
+    }
   }
 }

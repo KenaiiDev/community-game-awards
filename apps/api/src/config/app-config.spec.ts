@@ -17,6 +17,7 @@ describe('loadAppConfig', () => {
       cookieSecure: true,
       trustProxy: false,
       proxySecret: null,
+      cronSecret: null,
       discord: {
         clientId: 'cid',
         clientSecret: 'secret',

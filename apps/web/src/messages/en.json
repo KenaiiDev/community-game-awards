@@ -113,6 +113,7 @@
     "quest": "Quest",
     "log": "Quest log",
     "rules": "Rules",
+    "account": "Account",
     "language": "Language",
     "hint": "↑ ↓ to move"
   },
@@ -125,5 +126,22 @@
     "title": "This level doesn't exist",
     "body": "The page you're looking for isn't here. It may have moved, or the link is wrong.",
     "back": "Back to the main menu"
+  },
+  "account": {
+    "title": "Your account",
+    "signedInAs": "Signed in with Discord as {name}",
+    "dataTitle": "Your data",
+    "dataBody": "We store your Discord username, display name and avatar, and your judge applications. Nothing else.",
+    "delete": "Delete my data",
+    "deletePrompt": "Your account and all your applications will be deleted on {date}, one week from now. You can cancel until then.",
+    "deleteYes": "Yes, delete my data",
+    "deleteKeep": "Keep my account",
+    "pending": "Your data will be deleted on {date}.",
+    "pendingBody": "Changed your mind? You can cancel until then.",
+    "cancel": "Cancel deletion",
+    "error": {
+      "rate_limited": "Too many attempts. Wait a minute and try again.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }

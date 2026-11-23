@@ -1,6 +1,6 @@
 'use client';
 
-import { useNow, useTranslations } from 'next-intl';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import { Avatar } from '@/ui/Avatar';
 import { Button } from '@/ui/Button';
@@ -13,13 +13,35 @@ export interface LandingPageProps {
   edition: Edition | null;
   /** The judge signup card (container in the app, presentational in stories). */
   signup: ReactNode;
-  /** The signed-in visitor, shown in the HUD with a way to sign out. */
-  account?: { user: { displayName: string; avatarUrl: string | null }; onSignOut(): void } | null;
+  /** The signed-in visitor: shown in the HUD, with an Account screen in the menu. */
+  account?: Account | null;
+}
+
+export interface Account {
+  user: { displayName: string; avatarUrl: string | null };
+  /** Set while a requested deletion is in its one-week grace period. */
+  deletion: { scheduledFor: string } | null;
+  busy?: boolean;
+  error?: string;
+  onSignOut(): void;
+  onRequestDeletion(): void;
+  onCancelDeletion(): void;
 }
 
 /** The main menu, in order. The first entry is the screen shown on arrival. */
-const SCREENS = ['quest', 'log', 'rules', 'language'] as const;
+const SCREENS = ['quest', 'log', 'rules', 'account', 'language'] as const;
 type Screen = (typeof SCREENS)[number];
+
+const DELETION_GRACE_MS = 7 * 86_400_000;
+const DATE_TIME = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'UTC',
+  timeZoneName: 'short',
+} as const;
 
 const STEPS = ['signup', 'draw', 'play', 'nominate', 'vote', 'reveal'] as const;
 const PRINCIPLES = ['transparent', 'verifiable', 'fair'] as const;
@@ -68,10 +90,85 @@ function Countdown({ closesAt }: { closesAt: string }) {
   );
 }
 
+/** Who is signed in, what we keep, and the self-service deletion with its grace week. */
+function AccountScreen({ account }: { account: Account }) {
+  const t = useTranslations('account');
+  const format = useFormatter();
+  const now = useNow();
+  const [confirming, setConfirming] = useState(false);
+  const errorKey = account.error === 'rate_limited' ? 'rate_limited' : 'unknown';
+
+  return (
+    <Panel cut={20} innerClassName="space-y-6 p-6 sm:p-8">
+      <div>
+        <h2 className="mb-4 font-display text-2xl font-bold tracking-wide uppercase">{t('title')}</h2>
+        <div className="flex items-center gap-3">
+          <Avatar name={account.user.displayName} src={account.user.avatarUrl} />
+          <span className="text-sm text-ink-200">{t('signedInAs', { name: account.user.displayName })}</span>
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-1 font-display text-lg font-semibold">{t('dataTitle')}</h3>
+        <p className="text-sm leading-6 text-ink-400">{t('dataBody')}</p>
+      </div>
+      {account.error && (
+        <p role="alert" className="border-l-2 border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
+          {t(`error.${errorKey}`)}
+        </p>
+      )}
+      {account.deletion ? (
+        <div className="space-y-3 border border-danger/40 bg-danger/10 p-4">
+          <p className="text-sm font-semibold text-ink-50">
+            {t('pending', { date: format.dateTime(new Date(account.deletion.scheduledFor), DATE_TIME) })}
+          </p>
+          <p className="text-sm text-ink-200">{t('pendingBody')}</p>
+          <Button disabled={account.busy} onClick={account.onCancelDeletion}>
+            {t('cancel')}
+          </Button>
+        </div>
+      ) : confirming ? (
+        <div className="space-y-3 border border-danger/40 bg-danger/10 p-4">
+          <p className="text-sm text-ink-50">
+            {t('deletePrompt', { date: format.dateTime(new Date(now.getTime() + DELETION_GRACE_MS), DATE_TIME) })}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="danger"
+              disabled={account.busy}
+              onClick={() => {
+                setConfirming(false);
+                account.onRequestDeletion();
+              }}
+            >
+              {t('deleteYes')}
+            </Button>
+            <Button variant="ghost" onClick={() => setConfirming(false)}>
+              {t('deleteKeep')}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Button variant="danger" disabled={account.busy} onClick={() => setConfirming(true)}>
+          {t('delete')}
+        </Button>
+      )}
+    </Panel>
+  );
+}
+
 export function LandingPage({ locale, edition, signup, account }: LandingPageProps) {
   const t = useTranslations();
-  const [screen, setScreen] = useState<Screen>('quest');
-  const tabs = useRef<Record<Screen, HTMLButtonElement | null>>({ quest: null, log: null, rules: null, language: null });
+  const screens = SCREENS.filter((entry) => entry !== 'account' || account);
+  const [selected, setScreen] = useState<Screen>('quest');
+  // Signing out while on the Account screen falls back to the first screen.
+  const screen = screens.includes(selected) ? selected : 'quest';
+  const tabs = useRef<Record<Screen, HTMLButtonElement | null>>({
+    quest: null,
+    log: null,
+    rules: null,
+    account: null,
+    language: null,
+  });
   const signupOpen = edition?.signupStatus === 'open';
 
   function select(next: Screen) {
@@ -81,18 +178,18 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
 
   // Game-menu keys: arrows move (and wrap), Home and End jump to the ends.
   function onMenuKey(event: KeyboardEvent) {
-    const index = SCREENS.indexOf(screen);
+    const index = screens.indexOf(screen);
     const moves: Record<string, number> = {
       ArrowDown: index + 1,
       ArrowRight: index + 1,
       ArrowUp: index - 1,
       ArrowLeft: index - 1,
       Home: 0,
-      End: SCREENS.length - 1,
+      End: screens.length - 1,
     };
     if (!(event.key in moves)) return;
     event.preventDefault();
-    select(SCREENS[(moves[event.key] + SCREENS.length) % SCREENS.length]);
+    select(screens[(moves[event.key] + screens.length) % screens.length]);
   }
 
   return (
@@ -163,7 +260,7 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
               onKeyDown={onMenuKey}
               className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
             >
-              {SCREENS.map((entry, index) => {
+              {screens.map((entry, index) => {
                 const selected = entry === screen;
                 return (
                   <button
@@ -277,6 +374,8 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
                 </ul>
               </Panel>
             )}
+
+            {screen === 'account' && account && <AccountScreen account={account} />}
 
             {screen === 'language' && (
               <Panel cut={20} innerClassName="p-6 sm:p-8">

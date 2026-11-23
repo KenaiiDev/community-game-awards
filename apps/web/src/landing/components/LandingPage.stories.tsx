@@ -76,6 +76,8 @@ export const SignupOpen: Story = {
 
     // ...and a main menu whose first screen is the quest.
     const { tabs, tab, screen } = menu(canvasElement);
+    // Signed out: no account entry.
+    await expect(tabs).toHaveLength(4);
     await expect(['Quest', 'Quest log', 'Rules', 'Language'].map((name) => tabs.indexOf(tab(name)))).toEqual([0, 1, 2, 3]);
     await expect(tab('Quest')).toHaveAttribute('aria-selected', 'true');
     await expect(within(screen()).getByRole('heading', { name: 'Become a judge' })).toBeInTheDocument();
@@ -170,7 +172,14 @@ export const WithoutEdition: Story = {
 
 export const SignedIn: Story = {
   args: {
-    account: { user: { displayName: 'Kenaii', avatarUrl: null }, onSignOut: fn() },
+    account: {
+      user: { displayName: 'Kenaii', avatarUrl: null },
+      deletion: null,
+      busy: false,
+      onSignOut: fn(),
+      onRequestDeletion: fn(),
+      onCancelDeletion: fn(),
+    },
     signup: signup({
       kind: 'ready',
       edition,
@@ -192,5 +201,85 @@ export const SignedInMobile: Story = { args: SignedIn.args };
 export const SignedOutHasNoAccount: Story = {
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).queryByRole('button', { name: 'Sign out' })).toBeNull();
+  },
+};
+
+export const AccountScreen: Story = {
+  args: SignedIn.args,
+  play: async ({ canvasElement }) => {
+    const { tabs, tab, screen } = menu(canvasElement);
+    // Signed in: an Account entry appears before Language.
+    await expect(['Quest', 'Quest log', 'Rules', 'Account', 'Language'].map((name) => tabs.indexOf(tab(name)))).toEqual([
+      0, 1, 2, 3, 4,
+    ]);
+    await userEvent.click(tab('Account'));
+    const account = within(screen());
+    await expect(account.getByRole('heading', { name: 'Your account' })).toBeInTheDocument();
+    await expect(account.getByText('Signed in with Discord as Kenaii')).toBeInTheDocument();
+    await expect(account.getByRole('button', { name: 'Delete my data' })).toBeEnabled();
+  },
+};
+
+export const AccountDeletionPrompt: Story = {
+  args: SignedIn.args,
+  play: async ({ canvasElement, args }) => {
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Account'));
+    const account = within(screen());
+    await userEvent.click(account.getByRole('button', { name: 'Delete my data' }));
+    await userEvent.click(account.getByRole('button', { name: 'Keep my account' }));
+    await expect(args.account?.onRequestDeletion).not.toHaveBeenCalled();
+    await userEvent.click(account.getByRole('button', { name: 'Delete my data' }));
+    // The date shown is a week after "now" (the story clock is November 25, 2026, 12:00 UTC).
+    await expect(
+      account.getByText(
+        'Your account and all your applications will be deleted on December 2, 2026 at 12:00 PM UTC, one week from now. You can cancel until then.',
+      ),
+    ).toBeInTheDocument();
+    await expect(account.getByRole('button', { name: 'Yes, delete my data' })).toBeInTheDocument();
+  },
+};
+
+export const AccountDeletionConfirmed: Story = {
+  args: SignedIn.args,
+  play: async ({ canvasElement, args }) => {
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Account'));
+    const account = within(screen());
+    await userEvent.click(account.getByRole('button', { name: 'Delete my data' }));
+    await userEvent.click(account.getByRole('button', { name: 'Yes, delete my data' }));
+    await expect(args.account?.onRequestDeletion).toHaveBeenCalledOnce();
+  },
+};
+
+export const AccountDeletionPending: Story = {
+  args: { ...SignedIn.args, account: { ...SignedIn.args!.account!, deletion: { scheduledFor: '2026-12-02T12:00:00.000Z' } } },
+  play: async ({ canvasElement, args }) => {
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Account'));
+    const account = within(screen());
+    await expect(account.getByText('Your data will be deleted on December 2, 2026 at 12:00 PM UTC.')).toBeInTheDocument();
+    await expect(account.queryByRole('button', { name: 'Delete my data' })).toBeNull();
+    await userEvent.click(account.getByRole('button', { name: 'Cancel deletion' }));
+    await expect(args.account?.onCancelDeletion).toHaveBeenCalledOnce();
+  },
+};
+
+export const AccountDeletionError: Story = {
+  args: { ...SignedIn.args, account: { ...SignedIn.args!.account!, error: 'rate_limited' } },
+  play: async ({ canvasElement }) => {
+    const { tab, screen } = menu(canvasElement);
+    await userEvent.click(tab('Account'));
+    await expect(within(screen()).getByRole('alert')).toHaveTextContent('Too many attempts. Wait a minute and try again.');
+  },
+};
+
+export const AccountScreenSpanish: Story = {
+  args: { ...SignedIn.args, locale: 'es' },
+  parameters: { locale: 'es' },
+  play: async ({ canvasElement }) => {
+    const { tab, screen } = menu(canvasElement, 'Menú principal');
+    await userEvent.click(tab('Cuenta'));
+    await expect(within(screen()).getByRole('button', { name: 'Borrar mis datos' })).toBeInTheDocument();
   },
 };

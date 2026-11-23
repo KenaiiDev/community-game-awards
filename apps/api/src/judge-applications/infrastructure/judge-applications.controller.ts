@@ -24,6 +24,7 @@ import {
   type EditionRepository,
   type JudgeApplicationRepository,
 } from '../application/ports.js';
+import { deletionScheduledFor } from '../../account/domain/account-deletion.js';
 import { signupStatus, type Edition } from '../domain/edition.js';
 import { NoActiveEditionError } from '../domain/errors.js';
 import type { JudgeApplication } from '../domain/judge-application.js';
@@ -70,6 +71,9 @@ export class JudgeApplicationsController {
     return {
       user: { username: user.username, displayName: user.displayName, avatarUrl: user.avatarUrl },
       application: application && edition ? applicationView(application, edition) : null,
+      deletion: user.deletionRequestedAt
+        ? { scheduledFor: deletionScheduledFor(user.deletionRequestedAt).toISOString() }
+        : null,
     };
   }
 
@@ -78,6 +82,8 @@ export class JudgeApplicationsController {
   @Throttle({ default: RATE_LIMITS.write })
   @UseGuards(SessionGuard)
   async apply(@Req() req: AuthenticatedRequest, @Body() body: unknown) {
+    // A valid token can outlive its account (e.g. after the deletion purge).
+    if (!(await this.users.findById(req.userId))) throw new UnauthorizedException({ code: 'unauthenticated' });
     const consent = (body as { consent?: unknown } | null)?.consent === true;
     const application = await new ApplyAsJudge(this.editions, this.applications, this.clock).execute({
       userId: req.userId,

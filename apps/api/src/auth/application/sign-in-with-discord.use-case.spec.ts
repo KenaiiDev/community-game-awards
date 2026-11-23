@@ -17,6 +17,7 @@ describe('SignInWithDiscord', () => {
       username: 'kenaii',
       displayName: 'Kenaii',
       avatarUrl: 'https://cdn.discordapp.com/avatars/111/abc.png',
+      deletionRequestedAt: null,
     });
     expect(await users.findById(user.id)).toEqual(user);
   });

@@ -22,6 +22,7 @@ const config: AppConfig = {
   cookieSecure: false,
   trustProxy: false,
   proxySecret: null,
+  cronSecret: null,
   discord: { clientId: 'cid', clientSecret: 'secret', redirectUri: 'http://web.test/api/auth/discord/callback' },
 };
 
@@ -180,6 +181,7 @@ describe('Judge signup (e2e)', () => {
           avatarUrl: 'https://cdn.discordapp.com/avatars/111/abc.png',
         },
         application: null,
+        deletion: null,
       });
     });
   });

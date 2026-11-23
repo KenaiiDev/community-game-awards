@@ -1,4 +1,4 @@
-import type { Application, Edition, Me } from './types';
+import type { AccountDeletion, Application, Edition, Me } from './types';
 
 /** Same-origin path: Next.js rewrites /api/* to the Nest API, so cookies stay first-party. */
 export const SIGN_IN_URL = '/api/auth/discord';
@@ -19,6 +19,9 @@ export interface JudgeSignupApi {
   apply(): Promise<Application>;
   /** Withdraws the signed-in user's application to the current edition. */
   withdraw(): Promise<void>;
+  /** Schedules the deletion of the signed-in user's account and data. */
+  requestDeletion(): Promise<AccountDeletion>;
+  cancelDeletion(): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -55,6 +58,8 @@ export function createJudgeSignupApi(fetchFn: typeof fetch = fetch): JudgeSignup
         body: JSON.stringify({ consent: true }),
       }),
     withdraw: () => call<void>('/judge-applications/current', { method: 'DELETE' }),
+    requestDeletion: () => call<AccountDeletion>('/me/deletion', { method: 'POST' }),
+    cancelDeletion: () => call<void>('/me/deletion', { method: 'DELETE' }),
     signOut: () => call<void>('/auth/logout', { method: 'POST' }),
   };
 }

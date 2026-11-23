@@ -20,7 +20,14 @@ export interface Application {
   consentVersion: string;
 }
 
+export interface AccountDeletion {
+  /** When the account and all its data will be deleted (UTC ISO). */
+  scheduledFor: string;
+}
+
 export interface Me {
   user: PublicUser;
   application: Application | null;
+  /** Set while a requested deletion is in its one-week grace period. */
+  deletion: AccountDeletion | null;
 }

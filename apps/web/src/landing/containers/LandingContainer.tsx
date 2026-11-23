@@ -17,8 +17,12 @@ export function LandingContainer({ locale, authError }: { locale: string; authEr
   }, [store, authError]);
 
   const edition = 'edition' in state.view ? state.view.edition : null;
-  const account =
-    'user' in state.view ? { user: state.view.user, onSignOut: () => void state.signOut() } : null;
+  const account = state.account && {
+    ...state.account,
+    onSignOut: () => void state.signOut(),
+    onRequestDeletion: () => void state.requestDeletion(),
+    onCancelDeletion: () => void state.cancelDeletion(),
+  };
 
   return (
     <LandingPage
