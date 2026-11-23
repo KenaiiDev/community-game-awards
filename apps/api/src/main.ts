@@ -8,4 +8,6 @@ async function bootstrap() {
   configureApp(app);
   await app.listen(process.env.PORT ?? 4000);
 }
-await bootstrap();
+// Vercel detects this conventional bootstrap() that calls app.listen() and serves it
+// as a single function; keep this shape (no top-level await).
+void bootstrap();
