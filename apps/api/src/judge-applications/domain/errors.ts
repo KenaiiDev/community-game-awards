@@ -16,6 +16,13 @@ export class AlreadyAppliedError extends JudgeApplicationError {
   }
 }
 
+export class NotAppliedError extends JudgeApplicationError {
+  readonly code = 'not_applied';
+  constructor() {
+    super('This account has no application to the current edition');
+  }
+}
+
 export class SignupNotOpenError extends JudgeApplicationError {
   readonly code = 'signup_not_open';
   constructor() {

@@ -18,4 +18,11 @@ export class InMemoryJudgeApplicationRepository implements JudgeApplicationRepos
     this.items.push(application);
     return application;
   }
+
+  async delete(userId: string, editionId: string) {
+    const index = this.items.findIndex((a) => a.userId === userId && a.editionId === editionId);
+    if (index === -1) return false;
+    this.items.splice(index, 1);
+    return true;
+  }
 }

@@ -31,6 +31,7 @@ export function LandingContainer({ locale, authError }: { locale: string; authEr
           signInUrl={SIGN_IN_URL}
           onConsentChange={state.setConsent}
           onSubmit={() => void state.submit()}
+          onWithdraw={() => void state.withdraw()}
           onRetry={() => void state.load()}
         />
       }

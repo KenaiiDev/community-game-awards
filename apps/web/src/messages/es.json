@@ -91,7 +91,16 @@
       "submit": "Enviar tu postulación",
       "done": "Completado"
     },
-    "achievement": "Logro desbloqueado"
+    "achievement": "Logro desbloqueado",
+    "withdraw": "Retirar postulación",
+    "withdrawConfirm": "¿Retirar tu postulación a {edition}? Puedes volver a postularte mientras la inscripción esté abierta.",
+    "withdrawYes": "Sí, retirarla",
+    "withdrawKeep": "Mantenerla",
+    "withdrawing": "Retirando…",
+    "withdrawError": {
+      "signup_closed": "La inscripción ya cerró, así que la postulación no se puede retirar. Aún puedes borrar tus datos desde tu cuenta.",
+      "unknown": "No pudimos retirar tu postulación. Vuelve a intentarlo."
+    }
   },
   "footer": {
     "openSource": "Código abierto, gestionado por la comunidad."

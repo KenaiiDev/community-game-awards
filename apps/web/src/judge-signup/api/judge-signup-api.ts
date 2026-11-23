@@ -17,6 +17,8 @@ export interface JudgeSignupApi {
   /** The signed-in user, or null when there is no valid session. */
   getMe(): Promise<Me | null>;
   apply(): Promise<Application>;
+  /** Withdraws the signed-in user's application to the current edition. */
+  withdraw(): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -52,6 +54,7 @@ export function createJudgeSignupApi(fetchFn: typeof fetch = fetch): JudgeSignup
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ consent: true }),
       }),
+    withdraw: () => call<void>('/judge-applications/current', { method: 'DELETE' }),
     signOut: () => call<void>('/auth/logout', { method: 'POST' }),
   };
 }

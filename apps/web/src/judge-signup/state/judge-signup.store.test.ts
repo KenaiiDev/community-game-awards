@@ -27,6 +27,7 @@ function fakeApi(overrides: Partial<JudgeSignupApi> = {}): JudgeSignupApi & { ap
       return application;
     },
     signOut: async () => {},
+    withdraw: async () => {},
     ...overrides,
   };
   return api;
@@ -193,5 +194,50 @@ describe('judge signup store', () => {
     await store.getState().signOut();
 
     expect(store.getState().view).toEqual({ kind: 'signed_out', edition: openEdition });
+  });
+
+  describe('withdrawing an application', () => {
+    const applied = { getMe: async (): Promise<Me | null> => ({ user, application }) };
+
+    it('returns to an unchecked consent form after withdrawing', async () => {
+      let withdrawn = 0;
+      const store = createJudgeSignupStore(fakeApi({ ...applied, withdraw: async () => void (withdrawn += 1) }));
+      await store.getState().load();
+
+      const pending = store.getState().withdraw();
+      expect(store.getState().view).toMatchObject({ kind: 'applied', withdrawing: true });
+      await pending;
+
+      expect(withdrawn).toBe(1);
+      expect(store.getState().view).toEqual({ kind: 'ready', edition: openEdition, user, consent: false, submitting: false });
+    });
+
+    it('keeps the application and shows why when signup already closed', async () => {
+      const store = createJudgeSignupStore(
+        fakeApi({ ...applied, withdraw: async () => { throw new ApiError(403, 'signup_closed'); } }),
+      );
+      await store.getState().load();
+      await store.getState().withdraw();
+      expect(store.getState().view).toMatchObject({ kind: 'applied', withdrawing: false, error: 'signup_closed' });
+    });
+
+    it('reloads when there was nothing to withdraw (e.g. withdrawn in another tab)', async () => {
+      let me: Me | null = { user, application };
+      const store = createJudgeSignupStore(
+        fakeApi({ getMe: async () => me, withdraw: async () => { me = { user, application: null }; throw new ApiError(404, 'not_applied'); } }),
+      );
+      await store.getState().load();
+      await store.getState().withdraw();
+      expect(store.getState().view).toMatchObject({ kind: 'ready', consent: false });
+    });
+
+    it('returns to sign-in when the session expired', async () => {
+      const store = createJudgeSignupStore(
+        fakeApi({ ...applied, withdraw: async () => { throw new ApiError(401, 'unauthenticated'); } }),
+      );
+      await store.getState().load();
+      await store.getState().withdraw();
+      expect(store.getState().view).toEqual({ kind: 'signed_out', edition: openEdition });
+    });
   });
 });

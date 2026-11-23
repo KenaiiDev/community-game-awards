@@ -20,6 +20,7 @@ function signup(view: SignupView) {
       signInUrl="/api/auth/discord"
       onConsentChange={fn()}
       onSubmit={fn()}
+      onWithdraw={fn()}
       onRetry={fn()}
     />
   );

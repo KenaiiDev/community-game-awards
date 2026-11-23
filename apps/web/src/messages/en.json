@@ -91,7 +91,16 @@
       "submit": "Send your application",
       "done": "Done"
     },
-    "achievement": "Achievement unlocked"
+    "achievement": "Achievement unlocked",
+    "withdraw": "Withdraw application",
+    "withdrawConfirm": "Withdraw your application to {edition}? You can apply again while signup is open.",
+    "withdrawYes": "Yes, withdraw",
+    "withdrawKeep": "Keep it",
+    "withdrawing": "Withdrawing…",
+    "withdrawError": {
+      "signup_closed": "Signup has closed, so the application can no longer be withdrawn. You can still delete your data from your account.",
+      "unknown": "We couldn't withdraw your application. Please try again."
+    }
   },
   "footer": {
     "openSource": "Open source and community run."

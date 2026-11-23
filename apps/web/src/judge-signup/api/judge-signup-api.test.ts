@@ -58,6 +58,15 @@ describe('judge signup API client', () => {
     });
   });
 
+  it('withdraws the current application with a DELETE', async () => {
+    const { fn, calls } = fakeFetch(204);
+    await createJudgeSignupApi(fn).withdraw();
+    expect(calls[0]).toMatchObject({
+      url: '/api/judge-applications/current',
+      init: { method: 'DELETE', credentials: 'same-origin' },
+    });
+  });
+
   it('signs out with a POST', async () => {
     const { fn, calls } = fakeFetch(204);
     await createJudgeSignupApi(fn).signOut();

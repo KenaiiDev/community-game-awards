@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Inject,
@@ -12,6 +13,7 @@ import {
 import { USER_REPOSITORY, type UserRepository } from '../../auth/application/ports.js';
 import { SessionGuard, type AuthenticatedRequest } from '../../auth/infrastructure/session.guard.js';
 import { ApplyAsJudge } from '../application/apply-as-judge.use-case.js';
+import { WithdrawApplication } from '../application/withdraw-application.use-case.js';
 import {
   CLOCK,
   EDITION_REPOSITORY,
@@ -80,5 +82,12 @@ export class JudgeApplicationsController {
     });
     const edition = (await this.editions.findActive(this.clock.now()))!;
     return applicationView(application, edition);
+  }
+
+  @Delete('judge-applications/current')
+  @HttpCode(204)
+  @UseGuards(SessionGuard)
+  async withdraw(@Req() req: AuthenticatedRequest) {
+    await new WithdrawApplication(this.editions, this.applications, this.clock).execute({ userId: req.userId });
   }
 }

@@ -62,6 +62,24 @@ describe('Prisma repositories', () => {
     expect((await editions.findActive(new Date("2026-11-25Z")))?.signupClosesAt).toEqual(new Date('2026-12-10Z'));
   });
 
+  it('deletes only the given user\'s application and reports whether one existed', async () => {
+    const user = await users.upsertByDiscordId(discordUser);
+    const other = await users.upsertByDiscordId({ ...discordUser, discordId: '222', username: 'other' });
+    const edition = await upsertEdition(prisma, {
+      slug: 'e', name: 'E', signupOpensAt: new Date('2026-11-20Z'), signupClosesAt: new Date('2026-12-01Z'),
+    });
+    const base = { editionId: edition.id, consentedAt: new Date(), consentVersion: 'v1' };
+    await applications.create({ ...base, userId: user.id });
+    await applications.create({ ...base, userId: other.id });
+
+    expect(await applications.delete(user.id, edition.id)).toBe(true);
+    expect(await applications.delete(user.id, edition.id)).toBe(false);
+    expect(await applications.findByUserAndEdition(user.id, edition.id)).toBeNull();
+    expect(await applications.findByUserAndEdition(other.id, edition.id)).not.toBeNull();
+    // The user account itself is kept; only the application is withdrawn.
+    expect(await prisma.user.count()).toBe(2);
+  });
+
   it('enforces one application per user and edition at the database level, even concurrently', async () => {
     const user = await users.upsertByDiscordId(discordUser);
     const edition = await upsertEdition(prisma, {

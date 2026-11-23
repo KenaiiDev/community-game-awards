@@ -8,6 +8,7 @@ const STATUS_BY_CODE: Record<string, number> = {
   signup_not_open: 403,
   signup_closed: 403,
   no_active_edition: 404,
+  not_applied: 404,
 };
 
 @Catch(JudgeApplicationError)

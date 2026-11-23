@@ -36,6 +36,7 @@ const meta = {
     signInUrl: '/api/auth/discord',
     onConsentChange: fn(),
     onSubmit: fn(),
+    onWithdraw: fn(),
     onRetry: fn(),
   },
   decorators: [(Story) => <div className="mx-auto max-w-lg"><Story /></div>],
@@ -151,6 +152,7 @@ export const Applied: Story = {
   },
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).getByText('Achievement unlocked')).toBeInTheDocument();
+    await expect(within(canvasElement).getByRole('button', { name: 'Withdraw application' })).toBeEnabled();
     // Applying is celebrated with a burst of confetti. It is decorative only, and
     // with reduced motion it never shows up (tests always run with reduced motion).
     const celebration = within(canvasElement).getByTestId('celebration');
@@ -171,3 +173,59 @@ export const ReadySpanish: Story = {
 };
 
 export const AppliedSpanish: Story = { args: Applied.args, parameters: { locale: 'es' } };
+
+const appliedView = {
+  kind: 'applied',
+  edition,
+  user,
+  application: { editionSlug: edition.slug, consentedAt: '2026-11-25T12:00:00.000Z', consentVersion: 'v1' },
+} as const;
+
+export const AppliedWithdrawConfirm: Story = {
+  args: { view: appliedView },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    // Withdrawing asks first, and "keep it" backs out without calling anything.
+    await userEvent.click(canvas.getByRole('button', { name: 'Withdraw application' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Keep it' }));
+    await expect(args.onWithdraw).not.toHaveBeenCalled();
+    await userEvent.click(canvas.getByRole('button', { name: 'Withdraw application' }));
+    await expect(canvas.getByText('Withdraw your application to Express 2026? You can apply again while signup is open.')).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Yes, withdraw' }));
+    await expect(args.onWithdraw).toHaveBeenCalledOnce();
+  },
+};
+
+export const AppliedWithdrawing: Story = {
+  args: { view: { ...appliedView, withdrawing: true } },
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('button', { name: 'Withdrawing…' })).toBeDisabled();
+  },
+};
+
+export const AppliedWithdrawClosed: Story = {
+  args: { view: { ...appliedView, error: 'signup_closed' } },
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('alert')).toHaveTextContent(
+      'Signup has closed, so the application can no longer be withdrawn.',
+    );
+  },
+};
+
+export const AppliedWithdrawPrompt: Story = {
+  args: { view: appliedView },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Withdraw application' }));
+    await expect(canvas.getByRole('button', { name: 'Yes, withdraw' })).toBeInTheDocument();
+    await expect(canvas.queryByRole('button', { name: 'Withdraw application' })).toBeNull();
+  },
+};
+
+export const AppliedAfterClose: Story = {
+  args: { view: { ...appliedView, edition: { ...edition, signupStatus: 'closed' } } },
+  play: async ({ canvasElement }) => {
+    // The list is final once signup closes, so there is nothing to withdraw from here.
+    await expect(within(canvasElement).queryByRole('button', { name: 'Withdraw application' })).toBeNull();
+  },
+};

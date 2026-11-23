@@ -29,4 +29,10 @@ export class PrismaJudgeApplicationRepository implements JudgeApplicationReposit
       throw error;
     }
   }
+
+  async delete(userId: string, editionId: string): Promise<boolean> {
+    // deleteMany scoped by the unique pair: never more than one row, and no throw when absent.
+    const { count } = await this.prisma.judgeApplication.deleteMany({ where: { userId, editionId } });
+    return count > 0;
+  }
 }

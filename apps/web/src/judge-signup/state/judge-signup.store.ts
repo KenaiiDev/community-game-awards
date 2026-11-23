@@ -20,13 +20,21 @@ export type SignupView =
       submitting: boolean;
       error?: string;
     }
-  | { kind: 'applied'; edition: Edition; user: PublicUser; application: Application };
+  | {
+      kind: 'applied';
+      edition: Edition;
+      user: PublicUser;
+      application: Application;
+      withdrawing?: boolean;
+      error?: string;
+    };
 
 export interface JudgeSignupState {
   view: SignupView;
   load(options?: { authError?: AuthError }): Promise<void>;
   setConsent(consent: boolean): void;
   submit(): Promise<void>;
+  withdraw(): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -79,6 +87,28 @@ export function createJudgeSignupStore(api: JudgeSignupApi) {
           return;
         }
         set({ view: { ...view, submitting: false, error: code } });
+      }
+    },
+
+    async withdraw() {
+      const { view } = get();
+      if (view.kind !== 'applied' || view.withdrawing) return;
+      set({ view: { ...view, withdrawing: true, error: undefined } });
+      try {
+        await api.withdraw();
+        set({ view: { kind: 'ready', edition: view.edition, user: view.user, consent: false, submitting: false } });
+      } catch (error) {
+        const code = error instanceof ApiError ? error.code : 'unknown';
+        if (code === 'not_applied') {
+          // Already withdrawn elsewhere (another tab or device): show the real state.
+          await get().load();
+          return;
+        }
+        if (code === 'unauthenticated') {
+          set({ view: { kind: 'signed_out', edition: view.edition } });
+          return;
+        }
+        set({ view: { ...view, withdrawing: false, error: code } });
       }
     },
 
