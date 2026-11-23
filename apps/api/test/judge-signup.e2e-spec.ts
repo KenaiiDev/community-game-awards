@@ -20,6 +20,8 @@ const config: AppConfig = {
   webUrl: 'http://web.test',
   sessionSecret: 'test-session-secret-that-is-at-least-32-chars',
   cookieSecure: false,
+  trustProxy: false,
+  proxySecret: null,
   discord: { clientId: 'cid', clientSecret: 'secret', redirectUri: 'http://web.test/api/auth/discord/callback' },
 };
 

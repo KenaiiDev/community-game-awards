@@ -10,6 +10,8 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { RATE_LIMITS } from '../../rate-limit/rate-limits.js';
 import { USER_REPOSITORY, type UserRepository } from '../../auth/application/ports.js';
 import { SessionGuard, type AuthenticatedRequest } from '../../auth/infrastructure/session.guard.js';
 import { ApplyAsJudge } from '../application/apply-as-judge.use-case.js';
@@ -73,6 +75,7 @@ export class JudgeApplicationsController {
 
   @Post('judge-applications')
   @HttpCode(201)
+  @Throttle({ default: RATE_LIMITS.write })
   @UseGuards(SessionGuard)
   async apply(@Req() req: AuthenticatedRequest, @Body() body: unknown) {
     const consent = (body as { consent?: unknown } | null)?.consent === true;
@@ -86,6 +89,7 @@ export class JudgeApplicationsController {
 
   @Delete('judge-applications/current')
   @HttpCode(204)
+  @Throttle({ default: RATE_LIMITS.write })
   @UseGuards(SessionGuard)
   async withdraw(@Req() req: AuthenticatedRequest) {
     await new WithdrawApplication(this.editions, this.applications, this.clock).execute({ userId: req.userId });

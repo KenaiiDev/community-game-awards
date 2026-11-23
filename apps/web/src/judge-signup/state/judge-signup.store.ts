@@ -2,7 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { ApiError, type JudgeSignupApi } from '../api/judge-signup-api';
 import type { Application, Edition, PublicUser } from '../api/types';
 
-export type AuthError = 'state' | 'discord';
+export type AuthError = 'state' | 'discord' | 'rate_limited';
 
 /** Every screen the judge signup card can show. */
 export type SignupView =

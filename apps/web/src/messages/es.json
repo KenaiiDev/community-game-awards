@@ -65,7 +65,8 @@
     "signIn": "Iniciar sesión con Discord",
     "authError": {
       "state": "Tu sesión de inicio expiró. Vuelve a intentarlo.",
-      "discord": "El inicio de sesión con Discord no se completó. Vuelve a intentarlo."
+      "discord": "El inicio de sesión con Discord no se completó. Vuelve a intentarlo.",
+      "rate_limited": "Demasiados intentos de inicio de sesión. Espera un minuto y vuelve a intentarlo."
     },
     "signOut": "Cerrar sesión",
     "consent": "Acepto que mi identidad de Discord (nombre y avatar) y todas mis nominaciones sean públicas.",
@@ -78,7 +79,8 @@
       "signup_not_open": "La inscripción todavía no abrió.",
       "consent_required": "Debes aceptar que tu identidad sea pública para postularte.",
       "unauthenticated": "Tu sesión expiró. Vuelve a iniciar sesión.",
-      "unknown": "Algo salió mal. Vuelve a intentarlo."
+      "unknown": "Algo salió mal. Vuelve a intentarlo.",
+      "rate_limited": "Demasiados intentos. Espera un minuto y vuelve a intentarlo."
     },
     "appliedTitle": "Ya estás en el sorteo",
     "appliedBody": "Recibimos tu postulación para {edition} el {date}. Los jueces seleccionados se anunciarán cuando cierre la inscripción.",
@@ -99,7 +101,8 @@
     "withdrawing": "Retirando…",
     "withdrawError": {
       "signup_closed": "La inscripción ya cerró, así que la postulación no se puede retirar. Aún puedes borrar tus datos desde tu cuenta.",
-      "unknown": "No pudimos retirar tu postulación. Vuelve a intentarlo."
+      "unknown": "No pudimos retirar tu postulación. Vuelve a intentarlo.",
+      "rate_limited": "Demasiados intentos. Espera un minuto y vuelve a intentarlo."
     }
   },
   "footer": {

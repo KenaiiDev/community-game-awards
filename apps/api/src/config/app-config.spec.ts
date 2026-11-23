@@ -15,12 +15,23 @@ describe('loadAppConfig', () => {
       webUrl: 'http://localhost:3000',
       sessionSecret: 'x'.repeat(32),
       cookieSecure: true,
+      trustProxy: false,
+      proxySecret: null,
       discord: {
         clientId: 'cid',
         clientSecret: 'secret',
         redirectUri: 'http://localhost:3000/api/auth/discord/callback',
       },
     });
+  });
+
+  it('reads the proxy settings used to find the client IP behind Vercel', () => {
+    const config = loadAppConfig({ ...validEnv, TRUST_PROXY: 'true', PROXY_SECRET: 'p'.repeat(32) });
+    expect(config).toMatchObject({ trustProxy: true, proxySecret: 'p'.repeat(32) });
+  });
+
+  it('rejects a proxy secret shorter than 32 characters', () => {
+    expect(() => loadAppConfig({ ...validEnv, PROXY_SECRET: 'short' })).toThrow(/PROXY_SECRET/);
   });
 
   it('allows disabling secure cookies for local http development', () => {

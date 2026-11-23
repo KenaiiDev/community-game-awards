@@ -229,3 +229,17 @@ export const AppliedAfterClose: Story = {
     await expect(within(canvasElement).queryByRole('button', { name: 'Withdraw application' })).toBeNull();
   },
 };
+
+export const SignedOutRateLimited: Story = {
+  args: { view: { kind: 'signed_out', edition, authError: 'rate_limited' } },
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('alert')).toHaveTextContent('Too many sign-in attempts');
+  },
+};
+
+export const SubmitRateLimited: Story = {
+  args: { view: { ...ready, consent: true, error: 'rate_limited' } },
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('alert')).toHaveTextContent('Too many attempts. Wait a minute and try again.');
+  },
+};

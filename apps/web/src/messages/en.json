@@ -65,7 +65,8 @@
     "signIn": "Sign in with Discord",
     "authError": {
       "state": "Your sign-in session expired. Please try again.",
-      "discord": "Discord sign-in didn't complete. Please try again."
+      "discord": "Discord sign-in didn't complete. Please try again.",
+      "rate_limited": "Too many sign-in attempts. Wait a minute and try again."
     },
     "signOut": "Sign out",
     "consent": "I agree that my Discord identity (name and avatar) and all my nominations will be public.",
@@ -78,7 +79,8 @@
       "signup_not_open": "Signup hasn't opened yet.",
       "consent_required": "You need to accept the public identity terms to apply.",
       "unauthenticated": "Your session expired. Please sign in again.",
-      "unknown": "Something went wrong. Please try again."
+      "unknown": "Something went wrong. Please try again.",
+      "rate_limited": "Too many attempts. Wait a minute and try again."
     },
     "appliedTitle": "You're in the draw",
     "appliedBody": "Your application for {edition} was received {date}. Selected judges will be announced after signup closes.",
@@ -99,7 +101,8 @@
     "withdrawing": "Withdrawing…",
     "withdrawError": {
       "signup_closed": "Signup has closed, so the application can no longer be withdrawn. You can still delete your data from your account.",
-      "unknown": "We couldn't withdraw your application. Please try again."
+      "unknown": "We couldn't withdraw your application. Please try again.",
+      "rate_limited": "Too many attempts. Wait a minute and try again."
     }
   },
   "footer": {

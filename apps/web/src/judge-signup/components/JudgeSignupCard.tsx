@@ -13,6 +13,7 @@ const KNOWN_ERRORS = [
   'signup_not_open',
   'consent_required',
   'unauthenticated',
+  'rate_limited',
 ] as const;
 
 export interface JudgeSignupCardProps {
@@ -281,7 +282,7 @@ export function JudgeSignupCard({
           </p>
           {view.error && (
             <Notice tone="danger">
-              {t(`withdrawError.${view.error === 'signup_closed' ? 'signup_closed' : 'unknown'}`)}
+              {t(`withdrawError.${view.error === 'signup_closed' || view.error === 'rate_limited' ? view.error : 'unknown'}`)}
             </Notice>
           )}
           {view.edition.signupStatus !== 'open' ? null : confirmingWithdraw && !view.withdrawing ? (
