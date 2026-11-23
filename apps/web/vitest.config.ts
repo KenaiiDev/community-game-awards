@@ -28,7 +28,11 @@ export default defineConfig({
             headless: true,
             // A large browser window keeps the test frame at 1:1 scale, so screenshots
             // are taken at the real story size (see .storybook/vitest.visual.ts).
-            provider: playwright({ contextOptions: { viewport: { width: 1600, height: 5000 } } }),
+            // Reduced motion makes every animation resolve to its final state, so the
+            // screenshots never catch an element halfway through an entrance.
+            provider: playwright({
+              contextOptions: { viewport: { width: 1600, height: 5000 }, reducedMotion: 'reduce' },
+            }),
             instances: [{ browser: 'chromium' }],
             viewport: { width: 1280, height: 720 },
             expect: {

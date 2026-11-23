@@ -118,6 +118,16 @@ export const Applied: Story = {
       application: { editionSlug: edition.slug, consentedAt: '2026-11-25T12:00:00.000Z', consentVersion: 'v1' },
     },
   },
+  play: async ({ canvasElement }) => {
+    // Applying is celebrated with a burst of confetti. It is decorative only, and
+    // with reduced motion it never shows up (tests always run with reduced motion).
+    const celebration = within(canvasElement).getByTestId('celebration');
+    await expect(celebration).toHaveAttribute('aria-hidden', 'true');
+    await expect(celebration.children.length).toBeGreaterThan(0);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      await expect(celebration).not.toBeVisible();
+    }
+  },
 };
 
 export const ReadySpanish: Story = {

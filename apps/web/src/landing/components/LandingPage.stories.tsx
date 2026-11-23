@@ -43,7 +43,13 @@ type Story = StoryObj<typeof meta>;
 export const SignupOpen: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('heading', { level: 1 })).toHaveTextContent('Game awards decided by players');
+    const heading = canvas.getByRole('heading', { level: 1 });
+    await expect(heading).toHaveTextContent('Game awards decided by players');
+    // Content enters with motion, except for visitors who asked for reduced motion.
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const animation = getComputedStyle(heading).animationName;
+    if (reduced) await expect(animation).toBe('none');
+    else await expect(animation).not.toBe('none');
     await expect(canvas.getByRole('link', { name: 'Apply as a judge' })).toHaveAttribute('href', '#judge-signup');
     // The language menu is collapsed until opened, then lists every language.
     await expect(canvas.getByRole('link', { name: 'Español', hidden: true })).not.toBeVisible();
