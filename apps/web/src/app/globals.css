@@ -5,17 +5,23 @@
   --font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
   --font-pixel: "Silkscreen", ui-monospace, monospace;
 
-  --color-ink-950: #0b0d12;
-  --color-ink-900: #12151d;
-  --color-ink-800: #1a1f2b;
-  --color-ink-700: #262d3d;
-  --color-ink-400: #8b93a7;
-  --color-ink-200: #c9cedb;
-  --color-ink-50: #f4f5f8;
+  --color-ink-950: #0e0b1a;
+  --color-ink-900: #17122b;
+  --color-ink-800: #221b3d;
+  --color-ink-700: #342b56;
+  --color-ink-400: #9a92bb;
+  --color-ink-200: #d3cee6;
+  --color-ink-50: #f6f4fc;
 
-  --color-gold-300: #f6d77a;
-  --color-gold-400: #f0c14b;
-  --color-gold-500: #d9a521;
+  /* Gold is reserved for rewards: achievements, the current stage, the trophy. */
+  --color-gold-300: #f9d978;
+  --color-gold-400: #f6c744;
+  --color-gold-500: #dba92a;
+
+  /* Lime is the action color: buttons, selection, cursors and live state. */
+  --color-lime-300: #d9fb6a;
+  --color-lime-400: #c6f432;
+  --color-lime-500: #a3cc1b;
 
   --color-discord: #5865f2;
   --color-discord-hover: #4752c4;

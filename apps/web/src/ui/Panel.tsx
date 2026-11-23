@@ -3,7 +3,7 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 type Tone = 'default' | 'active' | 'muted';
 
 const frames: Record<Tone, string> = {
-  default: 'bg-gradient-to-br from-gold-400/60 via-ink-700 to-ink-700',
+  default: 'bg-gradient-to-br from-ink-400/50 via-ink-700 to-ink-700',
   active: 'bg-gradient-to-br from-gold-300 via-gold-500/70 to-gold-400/40',
   muted: 'bg-ink-800',
 };

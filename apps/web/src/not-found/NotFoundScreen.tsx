@@ -15,7 +15,7 @@ export function NotFoundScreen({ locale }: { locale: string }) {
         className="pointer-events-none absolute inset-0 animate-pan bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] bg-[size:24px_24px]"
       />
       <Panel cut={20} className="relative w-full max-w-md animate-rise" innerClassName="p-8 text-center">
-        <p className="mb-3 font-pixel text-[0.65rem] tracking-widest text-gold-400 uppercase">
+        <p className="mb-3 font-pixel text-[0.65rem] tracking-widest text-lime-400 uppercase">
           <span aria-hidden="true" className="mr-2 animate-blink">
             ◆
           </span>
