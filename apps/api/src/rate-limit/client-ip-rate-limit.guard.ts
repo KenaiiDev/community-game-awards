@@ -3,12 +3,12 @@ import { Reflector } from '@nestjs/core';
 import { timingSafeEqual } from 'node:crypto';
 import type { Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../config/app-config.js';
-import { FixedWindowCounter } from './fixed-window-counter.js';
+import { SlidingWindowLimiter } from './sliding-window-limiter.js';
 import { RateLimit, SkipRateLimit } from './rate-limit.decorators.js';
 import { RateLimitedError } from './rate-limited.error.js';
 import { RATE_LIMITS } from './rate-limits.js';
 
-/** How often ended windows are dropped from memory. */
+/** How often idle, unblocked clients are dropped from memory. */
 const SWEEP_EVERY_MS = 60_000;
 
 function sameValue(a: string, b: string): boolean {
@@ -25,8 +25,8 @@ function sameValue(a: string, b: string): boolean {
  */
 @Injectable()
 export class ClientIpRateLimitGuard implements CanActivate, OnModuleDestroy {
-  private readonly counter = new FixedWindowCounter();
-  private readonly sweeper = setInterval(() => this.counter.sweep(Date.now()), SWEEP_EVERY_MS).unref();
+  private readonly limiter = new SlidingWindowLimiter();
+  private readonly sweeper = setInterval(() => this.limiter.sweep(Date.now()), SWEEP_EVERY_MS).unref();
 
   constructor(
     private readonly reflector: Reflector,
@@ -41,11 +41,10 @@ export class ClientIpRateLimitGuard implements CanActivate, OnModuleDestroy {
     const http = context.switchToHttp();
     const req = http.getRequest<Request>();
     const route = `${context.getClass().name}.${context.getHandler().name}`;
-    const now = Date.now();
-    const { count, resetAt } = this.counter.hit(`${route}:${this.tracker(req)}`, rule.ttl, now);
-    if (count <= rule.limit) return true;
+    const { allowed, retryAfterMs } = this.limiter.hit(`${route}:${this.tracker(req)}`, rule, Date.now());
+    if (allowed) return true;
 
-    http.getResponse<Response>().setHeader('Retry-After', String(Math.max(1, Math.ceil((resetAt - now) / 1000))));
+    http.getResponse<Response>().setHeader('Retry-After', String(Math.max(1, Math.ceil(retryAfterMs / 1000))));
     throw new RateLimitedError();
   }
 
