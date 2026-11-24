@@ -18,6 +18,10 @@
       "title": "Sorteo público",
       "body": "Los jueces se sortean con una semilla verificable publicada de antemano."
     },
+    "confirm": {
+      "title": "Confirmación de jueces",
+      "body": "Los jueces sorteados aceptan su lugar desde el sitio. Los lugares que queden libres pasan a suplentes sorteados al azar."
+    },
     "play": {
       "title": "Tiempo para jugar",
       "body": "Los jueces seleccionados tienen tiempo para jugar los juegos del año."
@@ -25,6 +29,10 @@
     "nominate": {
       "title": "Nominaciones",
       "body": "Cada juez ordena sus elecciones por categoría. Todas las nominaciones son públicas."
+    },
+    "reports": {
+      "title": "Nominados y reportes",
+      "body": "Se anuncian los cinco primeros de cada categoría. Cualquiera puede reportar un nominado mal ubicado y el jurado resuelve cada reporte."
     },
     "vote": {
       "title": "Votación pública",
@@ -36,7 +44,9 @@
     },
     "stage": "Etapa {number}",
     "current": "Estás aquí",
-    "locked": "Bloqueada"
+    "locked": "Bloqueada",
+    "done": "Completada",
+    "utc": "Todas las fechas están en UTC."
   },
   "principles": {
     "title": "Reglas del juego",

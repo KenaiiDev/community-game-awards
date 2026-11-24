@@ -97,10 +97,44 @@ export const QuestLog: Story = {
     await expect(tab('Quest')).toHaveAttribute('aria-selected', 'false');
     // The edition is a quest log: signup is the current stage, the rest are locked.
     const stages = within(within(screen()).getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
-    await expect(stages).toHaveLength(6);
+    await expect(stages).toHaveLength(8);
     await expect(stages[0]).toHaveAttribute('aria-current', 'step');
     await expect(within(stages[0]).getByText('You are here')).toBeInTheDocument();
     for (const stage of stages.slice(1)) await expect(within(stage).getByText('Locked')).toBeInTheDocument();
+    // It is also the published roadmap: every stage carries its dates, in UTC.
+    const titles = stages.map((stage) => within(stage).getByRole('heading', { level: 3 }).textContent);
+    await expect(titles).toEqual([
+      'Judge signup',
+      'Public random draw',
+      'Judges confirm',
+      'Time to play',
+      'Nominations',
+      'Nominees and reports',
+      'Public vote',
+      'Winners revealed',
+    ]);
+    // Signup dates come from the edition; the last day is the one before the close.
+    await expect(stages[0]).toHaveTextContent(/Nov 20\s*–\s*Dec 14, 2026/);
+    await expect(stages[1]).toHaveTextContent(/Dec 16, 2026/);
+    await expect(stages[6]).toHaveTextContent(/Jan 25\s*–\s*Feb 7, 2027/);
+    await expect(stages[7]).toHaveTextContent(/Feb 13, 2027/);
+    // Single-day stages are machine-readable dates.
+    await expect(stages[7].querySelector('time')).toHaveAttribute('datetime', '2027-02-13');
+    await expect(within(screen()).getByText('All dates are in UTC.')).toBeInTheDocument();
+  },
+};
+
+export const QuestLogSpanish: Story = {
+  args: { locale: 'es' },
+  parameters: { locale: 'es' },
+  play: async ({ canvasElement }) => {
+    const { tab, screen } = menu(canvasElement, 'Menú principal');
+    await userEvent.click(tab('Registro de misiones'));
+    const stages = within(within(screen()).getByRole('list', { name: 'Registro de misiones' })).getAllByRole('listitem');
+    await expect(within(stages[0]).getByText('Estás aquí')).toBeInTheDocument();
+    await expect(within(stages[6]).getByRole('heading', { level: 3 })).toHaveTextContent('Votación pública');
+    await expect(stages[6]).toHaveTextContent(/25 ene.*7 feb 2027/);
+    await expect(within(screen()).getByText('Todas las fechas están en UTC.')).toBeInTheDocument();
   },
 };
 
@@ -163,8 +197,9 @@ export const SignupClosed: Story = {
     await expect(canvas.queryByText(/left$/)).toBeNull();
     const { tab, screen } = menu(canvasElement);
     await userEvent.click(tab('Quest log'));
-    // No stage is marked current once signup is closed.
+    // Signup is done, and no stage is current until the draw day.
     const stages = within(within(screen()).getByRole('list', { name: 'Quest log' })).getAllByRole('listitem');
+    await expect(within(stages[0]).getByText('Done')).toBeInTheDocument();
     for (const stage of stages) await expect(stage).not.toHaveAttribute('aria-current');
   },
 };
