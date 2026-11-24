@@ -99,6 +99,25 @@ describe('Rate limiting (e2e)', () => {
     expect(b.headers.location).toMatch(/^https:\/\/discord\.test\//);
   });
 
+  it('keeps a separate budget per route, so reaching one limit leaves the others usable', async () => {
+    app = await createApp();
+    const server = app.getHttpServer();
+    for (let i = 0; i <= RATE_LIMITS.auth.limit; i++) await request(server).get('/auth/discord');
+    const limited = await request(server).get('/auth/discord').expect(302);
+    expect(limited.headers.location).toContain('auth_error=rate_limited');
+    await request(server).get('/editions/current').expect(200);
+    await request(server).post('/judge-applications').send({ consent: true }).expect(401);
+  });
+
+  it('never limits the scheduled purge endpoint', async () => {
+    app = await createApp();
+    const server = app.getHttpServer();
+    for (let i = 0; i <= RATE_LIMITS.default.limit; i++) {
+      const res = await request(server).get('/internal/purge-deleted-accounts');
+      expect(res.status).not.toBe(429);
+    }
+  });
+
   it('ignores a forwarded IP without the right secret, so spoofing it does not reset the limit', async () => {
     app = await createApp();
     const server = app.getHttpServer();
