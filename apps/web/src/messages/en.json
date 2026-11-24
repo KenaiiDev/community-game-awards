@@ -18,6 +18,10 @@
       "title": "Public random draw",
       "body": "Judges are drawn with a verifiable seed published in advance."
     },
+    "confirm": {
+      "title": "Judges confirm",
+      "body": "Drawn judges accept their seat on the site. Seats left open go to substitutes drawn at random."
+    },
     "play": {
       "title": "Time to play",
       "body": "Selected judges get time to play the year's games."
@@ -25,6 +29,10 @@
     "nominate": {
       "title": "Nominations",
       "body": "Each judge ranks their picks per category. Every nomination is public."
+    },
+    "reports": {
+      "title": "Nominees and reports",
+      "body": "The top five per category are announced. Anyone can report a misplaced nominee, and the jury resolves each report."
     },
     "vote": {
       "title": "Public vote",
@@ -36,7 +44,9 @@
     },
     "stage": "Stage {number}",
     "current": "You are here",
-    "locked": "Locked"
+    "locked": "Locked",
+    "done": "Done",
+    "utc": "All dates are in UTC."
   },
   "principles": {
     "title": "Rules of the game",

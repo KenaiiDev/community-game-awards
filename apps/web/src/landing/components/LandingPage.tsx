@@ -9,6 +9,7 @@ import type { Edition } from '@/judge-signup/api/types';
 import { LOCALES } from '@/i18n/locales';
 import { localePath } from '@/i18n/paths';
 import { PrivacyLink } from '@/legal/PrivacyLink';
+import { roadmap, type RoadmapStage } from '../roadmap';
 
 export interface LandingPageProps {
   locale: string;
@@ -45,7 +46,7 @@ const DATE_TIME = {
   timeZoneName: 'short',
 } as const;
 
-const STEPS = ['signup', 'draw', 'play', 'nominate', 'vote', 'reveal'] as const;
+const STAGE_DATE = { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' } as const;
 const PRINCIPLES = ['transparent', 'verifiable', 'fair'] as const;
 
 /** Staggered entrance order: style={stagger(n)} with the animate-rise/pop classes. */
@@ -89,6 +90,88 @@ function Countdown({ closesAt }: { closesAt: string }) {
         {t('countdown', { days: Math.floor(left / DAY), hours: Math.floor((left % DAY) / HOUR) })}
       </span>
     </span>
+  );
+}
+
+function Check() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3 w-3 fill-current">
+      <path d="m6 13.4-5-5L3.4 6 6 8.6 12.6 2 15 4.4l-9 9Z" />
+    </svg>
+  );
+}
+
+/** A stage's days: one date, or a range collapsed by the locale ("Jan 11 – 17, 2027"). */
+function StageDates({ from, to }: Pick<RoadmapStage, 'from' | 'to'>) {
+  const format = useFormatter();
+  if (!from || !to) return null;
+  const start = new Date(`${from}T00:00:00Z`);
+  const end = new Date(`${to}T00:00:00Z`);
+  return (
+    <p className="mt-0.5 font-pixel text-[0.6rem] tracking-wider text-lime-400 uppercase">
+      {from === to ? (
+        <time dateTime={from}>{format.dateTime(start, STAGE_DATE)}</time>
+      ) : (
+        format.dateTimeRange(start, end, STAGE_DATE)
+      )}
+    </p>
+  );
+}
+
+/** The edition's roadmap: every phase with its dates, and where the edition is now. */
+function QuestLog({ edition }: { edition: Edition | null }) {
+  const t = useTranslations('steps');
+  const now = useNow({ updateInterval: 60_000 });
+  const stages = roadmap(edition, now);
+  return (
+    <Panel cut={20} innerClassName="p-6 sm:p-8">
+      <h2 id="quest-log" className="mb-1 font-display text-2xl font-bold tracking-wide uppercase">
+        {t('title')}
+      </h2>
+      <p className="mb-5 text-sm text-ink-400">{t('utc')}</p>
+      <ol aria-labelledby="quest-log" className="space-y-2">
+        {stages.map(({ stage, from, to, status }, index) => {
+          const current = status === 'current';
+          return (
+            <li
+              key={stage}
+              aria-current={current ? 'step' : undefined}
+              style={stagger(index)}
+              className={`chamfer animate-rise px-4 py-3 [--cut:8px] ${
+                current ? 'bg-gold-400/12' : status === 'done' ? 'bg-ink-800/25' : 'bg-ink-800/40'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3 font-pixel text-[0.6rem] tracking-wider uppercase">
+                <span className="text-ink-400">{t('stage', { number: String(index + 1).padStart(2, '0') })}</span>
+                {current && (
+                  <span className="chamfer flex items-center gap-1.5 bg-gold-400 px-2 py-1 text-ink-950 [--cut:4px]">
+                    <span aria-hidden="true" className="animate-blink">
+                      ▶
+                    </span>
+                    {t('current')}
+                  </span>
+                )}
+                {status === 'upcoming' && (
+                  <span className="flex items-center gap-1.5 text-ink-400">
+                    <Lock />
+                    {t('locked')}
+                  </span>
+                )}
+                {status === 'done' && (
+                  <span className="flex items-center gap-1.5 text-lime-400">
+                    <Check />
+                    {t('done')}
+                  </span>
+                )}
+              </div>
+              <h3 className="mt-1 font-display text-base font-semibold">{t(`${stage}.title`)}</h3>
+              <StageDates from={from} to={to} />
+              <p className="mt-1 text-sm leading-6 text-ink-400">{t(`${stage}.body`)}</p>
+            </li>
+          );
+        })}
+      </ol>
+    </Panel>
   );
 }
 
@@ -317,52 +400,7 @@ export function LandingPage({ locale, edition, signup, account }: LandingPagePro
           <div key={screen} className="animate-swap">
             {screen === 'quest' && <div id="judge-signup">{signup}</div>}
 
-            {screen === 'log' && (
-              <Panel cut={20} innerClassName="p-6 sm:p-8">
-                <h2 id="quest-log" className="mb-5 font-display text-2xl font-bold tracking-wide uppercase">
-                  {t('steps.title')}
-                </h2>
-                <ol aria-labelledby="quest-log" className="space-y-2">
-                  {STEPS.map((step, index) => {
-                    // While signup is open the edition sits on stage 1; later stages are locked.
-                    const current = signupOpen && index === 0;
-                    const locked = signupOpen && index > 0;
-                    return (
-                      <li
-                        key={step}
-                        aria-current={current ? 'step' : undefined}
-                        style={stagger(index)}
-                        className={`chamfer animate-rise px-4 py-3 [--cut:8px] ${
-                          current ? 'bg-gold-400/12' : 'bg-ink-800/40'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-3 font-pixel text-[0.6rem] tracking-wider uppercase">
-                          <span className="text-ink-400">
-                            {t('steps.stage', { number: String(index + 1).padStart(2, '0') })}
-                          </span>
-                          {current && (
-                            <span className="chamfer flex items-center gap-1.5 bg-gold-400 px-2 py-1 text-ink-950 [--cut:4px]">
-                              <span aria-hidden="true" className="animate-blink">
-                                ▶
-                              </span>
-                              {t('steps.current')}
-                            </span>
-                          )}
-                          {locked && (
-                            <span className="flex items-center gap-1.5 text-ink-400">
-                              <Lock />
-                              {t('steps.locked')}
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="mt-1 font-display text-base font-semibold">{t(`steps.${step}.title`)}</h3>
-                        <p className="text-sm leading-6 text-ink-400">{t(`steps.${step}.body`)}</p>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </Panel>
-            )}
+            {screen === 'log' && <QuestLog edition={edition} />}
 
             {screen === 'rules' && (
               <Panel cut={20} innerClassName="p-6 sm:p-8">
