@@ -1,5 +1,5 @@
 import { Controller, Delete, Get, HttpCode, Inject, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { RateLimit, SkipRateLimit } from '../../rate-limit/rate-limit.decorators.js';
 import { timingSafeEqual } from 'node:crypto';
 import type { Request } from 'express';
 import { USER_REPOSITORY, type UserRepository } from '../../auth/application/ports.js';
@@ -30,7 +30,7 @@ export class AccountController {
   @Post('me/deletion')
   @HttpCode(202)
   @UseGuards(SessionGuard)
-  @Throttle({ default: RATE_LIMITS.write })
+  @RateLimit(RATE_LIMITS.write)
   async requestDeletion(@Req() req: AuthenticatedRequest) {
     const result = await new RequestAccountDeletion(this.users, this.clock).execute({ userId: req.userId });
     // A valid token can outlive its account (purged after the grace period).
@@ -41,14 +41,14 @@ export class AccountController {
   @Delete('me/deletion')
   @HttpCode(204)
   @UseGuards(SessionGuard)
-  @Throttle({ default: RATE_LIMITS.write })
+  @RateLimit(RATE_LIMITS.write)
   async cancelDeletion(@Req() req: AuthenticatedRequest) {
     await new CancelAccountDeletion(this.users).execute({ userId: req.userId });
   }
 
   /** Called once a day by Vercel Cron with `Authorization: Bearer <CRON_SECRET>`. */
   @Get('internal/purge-deleted-accounts')
-  @SkipThrottle()
+  @SkipRateLimit()
   async purge(@Req() req: Request) {
     const header = req.header('authorization') ?? '';
     const expected = this.config.cronSecret ? `Bearer ${this.config.cronSecret}` : null;

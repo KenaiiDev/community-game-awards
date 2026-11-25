@@ -9,7 +9,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { RateLimit } from '../../rate-limit/rate-limit.decorators.js';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import type { CookieOptions, Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../../config/app-config.js';
@@ -51,7 +51,7 @@ export class AuthController {
   }
 
   @Get('discord')
-  @Throttle({ default: RATE_LIMITS.auth })
+  @RateLimit(RATE_LIMITS.auth)
   start(@Res() res: Response) {
     const state = randomBytes(32).toString('base64url');
     res.cookie(STATE_COOKIE, state, this.cookieOptions(STATE_TTL_MS));
@@ -59,7 +59,7 @@ export class AuthController {
   }
 
   @Get('discord/callback')
-  @Throttle({ default: RATE_LIMITS.auth })
+  @RateLimit(RATE_LIMITS.auth)
   async callback(
     @Req() req: Request,
     @Res() res: Response,

@@ -90,6 +90,8 @@ Two Vercel projects from this repository (web and API) and one Neon database. Th
 5. **Discord.** Add `https://<web-domain>/api/auth/discord/callback` under **OAuth2 → Redirects**.
 6. **Check.** `https://<web-domain>/api/editions/current` returns the edition, and signing in brings you back to the site.
 
+The API's runtime dependencies must be ES modules, or at least never `require()` Nest: Nest 12 is ESM-only and Vercel's function loader does not support `require(esm)`, so such a package crashes the API at boot with `ERR_REQUIRE_ESM` (this is why rate limiting is in-house instead of `@nestjs/throttler`). A unit test guards it; locally, `node --no-experimental-require-module dist/main` reproduces Vercel's behavior.
+
 Known limits of the free setup: rate-limit counters live in each serverless instance (best effort, not exact across instances), and Vercel's Hobby plan is for non-commercial use.
 
 ## Editions
